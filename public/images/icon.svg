@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="navyBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a2744;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#243868;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e8a020;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f5c060;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Circle Background - Navy Blue -->
+  <circle cx="100" cy="100" r="90" fill="url(#navyBlue)"/>
+  
+  <!-- White Triangle -->
+  <path d="M100,25 L170,150 L30,150 Z" fill="#fff"/>
+  
+  <!-- Sun (8 rays) -->
+  <g transform="translate(100, 150)">
+    <circle cx="0" cy="-12" r="10" fill="url(#goldGrad)"/>
+    <polygon points="0,-24 4,-36 -4,-36" fill="#e8a020" transform="rotate(0)"/>
+    <polygon points="0,-24 4,-36 -4,-36" fill="#e8a020" transform="rotate(45)"/>
+    <polygon points="0,-24 4,-36 -4,-36" fill="#e8a020" transform="rotate(90)"/>
+    <polygon points="0,-24 4,-36 -4,-36" fill="#e8a020" transform="rotate(135)"/>
+    <polygon points="0,-24 4,-36 -4,-36" fill="#e8a020" transform="rotate(180)"/>
+    <polygon points="0,-24 4,-36 -4,-36" fill="#e8a020" transform="rotate(225)"/>
+    <polygon points="0,-24 4,-36 -4,-36" fill="#e8a020" transform="rotate(270)"/>
+    <polygon points="0,-24 4,-36 -4,-36" fill="#e8a020" transform="rotate(315)"/>
+  </g>
+  
+  <!-- 3 Stars - Gold -->
+  <polygon points="100,55 102,60 107,60 103,63 105,68 100,65 95,68 97,63 93,60 98,60" fill="#e8a020"/>
+  <polygon points="75,90 77,94 82,94 78,96 80,100 75,97 70,100 72,96 68,94 73,94" fill="#e8a020" transform="scale(0.8) translate(-18,-18)"/>
+  <polygon points="125,90 127,94 132,94 128,96 130,100 125,97 120,100 122,96 118,94 123,94" fill="#e8a020" transform="scale(0.8) translate(35,-18)"/>
+  
+  <!-- Book/Guide Symbol -->
+  <g transform="translate(100, 100)">
+    <path d="M-28,-22 L-28,28 L28,28 L28,-22 L22,-17 L-22,-17 Z" fill="#1a2744" opacity="0.9"/>
+    <path d="M-28,-22 L0,-32 L0,-22 L-22,-17 Z" fill="#e8a020"/>
+    <path d="M0,-32 L28,-22 L22,-17 L0,-22 Z" fill="#f5c060"/>
+    <line x1="0" y1="-22" x2="0" y2="28" stroke="#fff" stroke-width="2.5"/>
+    <path d="M-28,0 L0,-5 L28,0" fill="none" stroke="#fff" stroke-width="1.5"/>
+    <path d="M-28,12 L0,7 L28,12" fill="none" stroke="#fff" stroke-width="1.5"/>
+  </g>
+</svg>

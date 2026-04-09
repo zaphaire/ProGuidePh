@@ -1,0 +1,122 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Setting;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+
+class SettingController extends Controller
+{
+    public function index()
+    {
+        $settings = Setting::all()->keyBy('key');
+        return view('admin.settings.index', compact('settings'));
+    }
+
+    public function update(Request $request)
+    {
+        $data = $request->except(['_token', '_method']);
+
+        foreach ($data as $key => $value) {
+            Setting::set($key, $value);
+        }
+
+        Cache::flush();
+
+        return redirect()->route('admin.settings.index')->with('success', 'Settings saved successfully!');
+    }
+
+    public function syncAboutPage()
+    {
+        $body = <<<'HTML'
+<div class="about-hero">
+    <div class="about-hero-content">
+        <span class="about-badge">Welcome to ProGuidePh</span>
+        <h1>Your Digital Tambayan for Practical Knowledge</h1>
+        <p>ProGuidePh is your trusted online destination for helpful articles, practical tips, and useful guides written by Filipinos, for Filipinos. We share real-world knowledge that you can apply in your daily life.</p>
+    </div>
+</div>
+
+<div class="about-section about-mission">
+    <h2><span class="icon">🎯</span> Our Mission</h2>
+    <p>To create a welcoming space where helpful information flows freely — sharing practical wisdom, useful tips, and actionable guides that empower every Filipino to live smarter and make better decisions in their daily lives.</p>
+</div>
+
+<div class="about-section about-values">
+    <h2>What We Stand For</h2>
+    <div class="values-grid">
+        <div class="value-card">
+            <span class="value-icon">📝</span>
+            <h3>Practical Content</h3>
+            <p>We share tips and guides that you can actually use — no fluff, just helpful information you can apply today.</p>
+        </div>
+        <div class="value-card">
+            <span class="value-icon">🤝</span>
+            <h3>Filipino-Centric</h3>
+            <p>Content that speaks to the Filipino experience — addressing the unique challenges and opportunities we face daily.</p>
+        </div>
+        <div class="value-card">
+            <span class="value-icon">💡</span>
+            <h3>Simple & Clear</h3>
+            <p>We believe good information should be easy to understand. No jargon, no complexity — just clear, practical advice.</p>
+        </div>
+        <div class="value-card">
+            <span class="value-icon">❤️</span>
+            <h3>Community-Driven</h3>
+            <p>This is our shared space. We learn from each other, share what we know, and grow together as a community.</p>
+        </div>
+    </div>
+</div>
+
+<div class="about-section about-why">
+    <h2>Why ProGuidePh?</h2>
+    <div class="why-grid">
+        <div class="why-item">
+            <span class="why-number">1</span>
+            <div>
+                <h3>Real, Practical Tips</h3>
+                <p>Every article is written with real-world application in mind. We share what actually works.</p>
+            </div>
+        </div>
+        <div class="why-item">
+            <span class="why-number">2</span>
+            <div>
+                <h3>Written by Filipinos</h3>
+                <p>Our content is created by people who understand the Filipino context — culture, challenges, and lifestyle.</p>
+            </div>
+        </div>
+        <div class="why-item">
+            <span class="why-number">3</span>
+            <div>
+                <h3>Easy to Understand</h3>
+                <p>No complicated jargon. We write in a way that's conversational, friendly, and easy to follow.</p>
+            </div>
+        </div>
+        <div class="why-item">
+            <span class="why-number">4</span>
+            <div>
+                <h3>Always Free</h3>
+                <p>Helpful information should be free. Everything on ProGuidePh is accessible to everyone, no paywalls.</p>
+            </div>
+        </div>
+    </div>
+</div>
+HTML;
+
+        \App\Models\Page::updateOrCreate(
+            ['slug' => 'about'],
+            [
+                'user_id' => \App\Models\User::where('role', 'admin')->first()->id ?? (\App\Models\User::first()->id ?? 1),
+                'title' => 'About Us',
+                'body' => $body,
+                'is_published' => true,
+                'meta_title' => 'About ProGuidePh - Your Digital Tambayan for Practical Knowledge',
+                'meta_description' => 'Learn more about ProGuidePh, our mission to share practical wisdom, and our commitment to providing helpful guides for Filipinos.'
+            ]
+        );
+
+        return redirect()->route('admin.settings.index')->with('success', 'About page successfully synchronized to ProGuidePh branding!');
+    }
+}
