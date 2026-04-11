@@ -21,7 +21,7 @@ class NewPasswordController extends Controller
     {
         $token = $request->route('token');
 
-        $record = DB::table('password_reset_tokens')
+        $record = DB::table('password_resets')
             ->where('token', $token)
             ->first();
 
@@ -64,7 +64,7 @@ class NewPasswordController extends Controller
                 ->withErrors(['email' => 'User not found.']);
         }
 
-        $record = DB::table('password_reset_tokens')
+        $record = DB::table('password_resets')
             ->where('token', $token)
             ->where('email', $user->email)
             ->first();
@@ -79,7 +79,7 @@ class NewPasswordController extends Controller
             'remember_token' => Str::random(60),
         ])->save();
 
-        DB::table('password_reset_tokens')
+        DB::table('password_resets')
             ->where('email', $user->email)
             ->delete();
 
