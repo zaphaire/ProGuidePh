@@ -58,12 +58,22 @@
                 <th>Current Time</th>
                 <td>{{ $systemStats['current_time'] }}</td>
             </tr>
+        </table>
+    </div>
+
+    <div class="admin-card">
+        <h3>PHP Settings</h3>
+        <table class="table">
             <tr>
                 <th>Memory Limit</th>
                 <td>{{ $systemStats['memory_limit'] }}</td>
             </tr>
             <tr>
-                <th>Max Execution Time</th>
+                <th>Memory Used</th>
+                <td>{{ $systemStats['memory_used'] }}</td>
+            </tr>
+            <tr>
+                <th>Max Execution</th>
                 <td>{{ $systemStats['max_execution_time'] }}s</td>
             </tr>
             <tr>
@@ -72,10 +82,20 @@
             </tr>
         </table>
     </div>
+</div>
 
+<div class="admin-grid">
     <div class="admin-card">
-        <h3>Cache Configuration</h3>
+        <h3>Application Config</h3>
         <table class="table">
+            <tr>
+                <th>Environment</th>
+                <td><span class="badge badge-{{ $systemStats['app_env'] === 'production' ? 'success' : 'warning' }}">{{ $systemStats['app_env'] }}</span></td>
+            </tr>
+            <tr>
+                <th>Debug Mode</th>
+                <td><span class="badge badge-{{ $systemStats['app_debug'] === 'true' ? 'danger' : 'success' }}">{{ $systemStats['app_debug'] }}</span></td>
+            </tr>
             <tr>
                 <th>Cache Driver</th>
                 <td>{{ $cacheStats['driver'] }}</td>
@@ -86,7 +106,51 @@
             </tr>
         </table>
     </div>
+
+    <div class="admin-card">
+        <h3>Disk Usage</h3>
+        <table class="table">
+            <tr>
+                <th>App Size</th>
+                <td>{{ $diskStats['app_size'] }}</td>
+            </tr>
+            <tr>
+                <th>Storage Size</th>
+                <td>{{ $diskStats['storage_size'] }}</td>
+            </tr>
+            <tr>
+                <th>Logs Size</th>
+                <td>{{ $diskStats['logs_size'] }}</td>
+            </tr>
+            <tr>
+                <th>Cache Size</th>
+                <td>{{ $diskStats['bootstrap_cache'] }}</td>
+            </tr>
+        </table>
+    </div>
 </div>
+
+@if($recentErrors->isNotEmpty())
+<div class="admin-card">
+    <h3>⚠️ Recent Errors</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Error Message</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($recentErrors as $error)
+            <tr>
+                <td class="text-red">{{ Str::limit($error['message'], 80) }}</td>
+                <td>{{ $error['date'] }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+@endif
 
 <div class="admin-card">
     <h3>Recent Login Activity</h3>

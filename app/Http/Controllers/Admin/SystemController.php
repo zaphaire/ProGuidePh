@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class SystemController extends Controller
 {
@@ -15,9 +16,11 @@ class SystemController extends Controller
         $dbStats = $this->getDatabaseStats();
         $systemStats = $this->getSystemStats();
         $cacheStats = $this->getCacheStats();
+        $diskStats = $this->getDiskStats();
         $loginLogs = $this->getRecentLoginLogs();
+        $recentErrors = $this->getRecentErrors();
         
-        return view('admin.system', compact('dbStats', 'systemStats', 'cacheStats', 'loginLogs'));
+        return view('admin.system', compact('dbStats', 'systemStats', 'cacheStats', 'diskStats', 'loginLogs', 'recentErrors'));
     }
     
     public function clearCache()
@@ -60,8 +63,11 @@ class SystemController extends Controller
             'timezone' => config('app.timezone'),
             'max_execution_time' => ini_get('max_execution_time'),
             'memory_limit' => ini_get('memory_limit'),
+            'memory_used' => $this->formatBytes(memory_get_usage(true)),
             'upload_max_filesize' => ini_get('upload_max_filesize'),
             'post_max_size' => ini_get('post_max_size'),
+            'app_env' => config('app.env'),
+            'app_debug' => config('app.debug') ? 'true' : 'false',
         ];
     }
     
@@ -73,12 +79,65 @@ class SystemController extends Controller
         ];
     }
     
+    private function getDiskStats()
+    {
+        $basePath = base_path();
+        $storagePath = storage_path();
+        
+        return [
+            'app_size' => $this->formatBytes($this->getDirectorySize($basePath)),
+            'storage_size' => $this->formatBytes($this->getDirectorySize($storagePath)),
+            'logs_size' => $this->formatBytes($this->getDirectorySize(storage_path('logs'))),
+            'bootstrap_cache' => $this->formatBytes($this->getDirectorySize(storage_path('framework/cache'))),
+        ];
+    }
+    
     private function getRecentLoginLogs()
     {
         return DB::table('login_logs')
             ->orderByDesc('created_at')
-            ->take(20)
+            ->take(15)
             ->get();
+    }
+    
+    private function getRecentErrors()
+    {
+        $logFiles = [
+            storage_path('logs/laravel.log'),
+            storage_path('logs/laravel-' . date('Y-m-d') . '.log'),
+        ];
+        
+        $errors = [];
+        foreach ($logFiles as $file) {
+            if (File::exists($file)) {
+                $content = File::get($file);
+                $lines = explode("\n", $content);
+                foreach (array_reverse($lines) as $line) {
+                    if (stripos($line, 'ERROR') !== false || stripos($line, 'EXCEPTION') !== false) {
+                        $errors[] = [
+                            'message' => trim($line),
+                            'date' => date('Y-m-d H:i:s', filemtime($file)),
+                        ];
+                        if (count($errors) >= 10) break;
+                    }
+                }
+            }
+        }
+        
+        return collect($errors)->take(10);
+    }
+    
+    private function getDirectorySize($path)
+    {
+        if (!File::exists($path)) return 0;
+        
+        $size = 0;
+        if (is_dir($path)) {
+            foreach (File::allFiles($path) as $file) {
+                $size += $file->getSize();
+            }
+        }
+        return $size;
     }
     
     private function formatBytes($bytes)
