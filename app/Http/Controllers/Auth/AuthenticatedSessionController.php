@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Mail\LoginAlertMail;
 use App\Mail\LoginOtpCode;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -40,6 +41,17 @@ class AuthenticatedSessionController extends Controller
                 'failure_reason' => 'Invalid credentials',
                 'created_at' => now(),
             ]);
+
+            $failedUser = \App\Models\User::where('email', $email)->first();
+            if ($failedUser) {
+                Mail::to($failedUser)->send(new LoginAlertMail(
+                    $failedUser,
+                    false,
+                    $ipAddress,
+                    $userAgent,
+                    now()->format('F j, Y g:i A')
+                ));
+            }
 
             throw \Illuminate\Validation\ValidationException::withMessages([
                 'email' => trans('auth.failed'),
@@ -88,6 +100,14 @@ class AuthenticatedSessionController extends Controller
             'failure_reason' => null,
             'created_at' => now(),
         ]);
+
+        Mail::to($user)->send(new LoginAlertMail(
+            $user,
+            true,
+            $ipAddress,
+            $userAgent,
+            now()->format('F j, Y g:i A')
+        ));
 
         Auth::logout();
 
