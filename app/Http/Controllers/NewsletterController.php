@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class NewsletterController extends Controller
 {
-    public function subscribe(Request $request): RedirectResponse
+    public function subscribe(Request $request): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|max:255',
@@ -18,6 +18,12 @@ class NewsletterController extends Controller
         ]);
 
         if ($validator->fails()) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
             return back()->withErrors($validator)->withInput();
         }
 
@@ -27,18 +33,29 @@ class NewsletterController extends Controller
 
         if ($existingSubscriber) {
             if ($existingSubscriber->is_verified && $existingSubscriber->is_active) {
-                return back()->with('message', 'You are already subscribed!');
+                $message = 'You are already subscribed!';
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => $message], 400);
+                }
+                return back()->with('message', $message);
             }
             
             if (!$existingSubscriber->is_verified) {
                 $existingSubscriber->update(['verify_token' => \Illuminate\Support\Str::random(64)]);
-                // Resend verification email would go here
-                return back()->with('message', 'A new verification link has been sent to your email.');
+                $message = 'A new verification link has been sent to your email.';
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => $message]);
+                }
+                return back()->with('message', $message);
             }
 
             if (!$existingSubscriber->is_active) {
                 $existingSubscriber->update(['is_active' => true, 'is_verified' => true, 'verify_token' => null]);
-                return back()->with('message', 'You have been re-subscribed successfully!');
+                $message = 'You have been re-subscribed successfully!';
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => $message]);
+                }
+                return back()->with('message', $message);
             }
         }
 
@@ -49,7 +66,13 @@ class NewsletterController extends Controller
 
         $subscriber->verify();
 
-        return back()->with('message', 'Thank you for subscribing!');
+        $message = 'Thank you for subscribing!';
+        
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $message]);
+        }
+        
+        return back()->with('message', $message);
     }
 
     public function unsubscribe(Request $request): RedirectResponse
