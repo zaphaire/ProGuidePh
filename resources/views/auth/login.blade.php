@@ -2,15 +2,6 @@
     <h2>Welcome back!</h2>
     <p class="subtitle">Enter your credentials to access your account</p>
 
-    @if($errors->any())
-        <div style="background: #fee2e2; color: #991b1b; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.875rem;">
-            {{ $errors->first() }}
-        </div>
-    @endif
-
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
     <form method="POST" action="{{ route('login') }}">
         @csrf
         <div class="form-group">
