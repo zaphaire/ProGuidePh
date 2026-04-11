@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\PostPublished;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Category;
@@ -63,7 +64,11 @@ class PostController extends Controller
             $validated['published_at'] = now();
         }
 
-        Post::create($validated);
+        $post = Post::create($validated);
+
+        if ($post->status === 'published') {
+            event(new PostPublished($post));
+        }
 
         return redirect()->route('admin.posts.index')->with('success', 'Post created successfully!');
     }
@@ -98,11 +103,18 @@ class PostController extends Controller
             $validated['featured_image'] = $request->file('featured_image')->store('posts', 'public');
         }
 
-        if ($validated['status'] === 'published' && !$post->published_at) {
+        $wasPublished = $post->status === 'published';
+        $willBePublished = $validated['status'] === 'published';
+
+        if ($willBePublished && !$wasPublished) {
             $validated['published_at'] = now();
         }
 
         $post->update($validated);
+
+        if ($willBePublished && !$wasPublished) {
+            event(new PostPublished($post));
+        }
 
         return redirect()->route('admin.posts.index')->with('success', 'Post updated successfully!');
     }
