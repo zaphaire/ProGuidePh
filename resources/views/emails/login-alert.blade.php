@@ -29,17 +29,19 @@
 </head>
 <body>
     <div class="wrapper">
-        <div class="header">
-            <div class="header-icon">@if($success)✅@else⚠️@endif</div>
-            <div class="header-text">@if($success)Successful Login @else Failed Login @endif</div>
+        <div class="header" style="@if($success) background: #059669; @elseif(isset($isLogout) && $isLogout) background: #7c3aed; @else background: #dc2626; @endif">
+            <div class="header-icon">@if($success)✅@elseif(isset($isLogout) && $isLogout)👋@else⚠️@endif</div>
+            <div class="header-text">@if($success)Successful Login @elseif(isset($isLogout) && $isLogout)Logged Out @else Failed Login @endif</div>
         </div>
         
         <div class="content">
             <div class="greeting">Hello {{ $user->name }},</div>
             
-            <div class="status {{ $success ? 'success' : 'failed' }}">
+            <div class="status @if($success) success @elseif(isset($isLogout) && $isLogout) failed @else failed @endif">
                 @if($success)
                     You successfully logged into your account.
+                @elseif(isset($isLogout) && $isLogout)
+                    You have been logged out of your account.
                 @else
                     Someone tried to log into your account.
                 @endif

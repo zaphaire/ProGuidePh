@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -97,12 +98,38 @@ class AuthenticatedSessionController extends Controller
 
     public function destroy(Request $request): RedirectResponse
     {
+        $user = $request->user();
+        
+        if ($user) {
+            $userAgent = $request->userAgent();
+            $ipAddress = $request->ip();
+            
+            DB::table('login_logs')->insert([
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'ip_address' => $ipAddress,
+                'user_agent' => $userAgent,
+                'success' => false,
+                'failure_reason' => 'Logout',
+                'created_at' => now(),
+            ]);
+            
+            Mail::to($user)->send(new LoginAlertMail(
+                $user,
+                false,
+                $ipAddress,
+                $userAgent,
+                now()->format('F j, Y g:i A'),
+                true
+            ));
+        }
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

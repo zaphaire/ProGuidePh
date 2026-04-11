@@ -18,14 +18,17 @@ class LoginAlertMail extends Mailable
         public bool $success,
         public string $ipAddress,
         public string $userAgent,
-        public string $time
+        public string $time,
+        public bool $isLogout = false
     ) {}
 
     public function envelope(): Envelope
     {
         $subject = $this->success 
             ? '[' . config('app.name') . '] Successful Login' 
-            : '[' . config('app.name') . '] Failed Login Attempt';
+            : ($this->isLogout 
+                ? '[' . config('app.name') . '] You Have Been Logged Out' 
+                : '[' . config('app.name') . '] Failed Login Attempt');
             
         return new Envelope(
             subject: $subject,
@@ -46,6 +49,7 @@ class LoginAlertMail extends Mailable
                 'ipAddress' => $this->ipAddress,
                 'userAgent' => $this->userAgent,
                 'time' => $this->time,
+                'isLogout' => $this->isLogout,
             ],
         );
     }
