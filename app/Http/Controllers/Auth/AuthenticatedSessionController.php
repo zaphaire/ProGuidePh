@@ -62,34 +62,18 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        if ($user) {
-            $otpCode = $this->generateSecureOtp();
-            $hashedOtp = hash('sha256', $otpCode);
+        $otpCode = $this->generateSecureOtp();
+        $hashedOtp = hash('sha256', $otpCode);
 
-            \Illuminate\Support\Facades\DB::table('users')
-                ->where('id', $user->id)
-                ->update([
-                    'otp_code' => $hashedOtp,
-                    'otp_expires_at' => now()->addMinutes(10),
-                    'is_otp_verified' => false,
-                ]);
-
-            Mail::to($user)->send(new LoginOtpCode($otpCode, $user->name));
-
-            session([
-                'pending_user_id' => $user->id,
-                'otp_ip_bound' => $ipAddress,
-                'otp_generated_at' => time(),
+        \Illuminate\Support\Facades\DB::table('users')
+            ->where('id', $user->id)
+            ->update([
+                'otp_code' => $hashedOtp,
+                'otp_expires_at' => now()->addMinutes(10),
+                'is_otp_verified' => false,
             ]);
-        }
 
         Mail::to($user)->send(new LoginOtpCode($otpCode, $user->name));
-
-        session([
-            'pending_user_id' => $user->id,
-            'otp_ip_bound' => $ipAddress,
-            'otp_generated_at' => time(),
-        ]);
 
         DB::table('login_logs')->insert([
             'user_id' => $user->id,
@@ -101,13 +85,11 @@ class AuthenticatedSessionController extends Controller
             'created_at' => now(),
         ]);
 
-        Mail::to($user)->send(new LoginAlertMail(
-            $user,
-            true,
-            $ipAddress,
-            $userAgent,
-            now()->format('F j, Y g:i A')
-        ));
+        session([
+            'pending_user_id' => $user->id,
+            'otp_ip_bound' => $ipAddress,
+            'otp_generated_at' => time(),
+        ]);
 
         Auth::logout();
 
