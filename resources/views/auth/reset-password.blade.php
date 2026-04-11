@@ -10,10 +10,8 @@
 
         <div class="form-group">
             <label class="form-label">Email Address</label>
-            <input type="email" name="email" class="form-input" value="{{ old('email', $request->email) }}" required autofocus placeholder="you@example.com">
-            @error('email')
-                <p class="error-message">{{ $message }}</p>
-            @enderror
+            <input type="hidden" name="email" value="{{ $request->email }}">
+            <input type="text" class="form-input" value="{{ $request->email }}" readonly style="background-color: #e5e5e5; cursor: not-allowed; color: #666;">
         </div>
 
         <div class="form-group">
