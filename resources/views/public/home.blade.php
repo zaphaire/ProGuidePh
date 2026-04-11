@@ -140,13 +140,4 @@
     </div>
 </section>
 
-{{-- Newsletter Section --}}
-<section class="section" style="background: linear-gradient(180deg, rgba(0,56,168,0.03) 0%, #f8fafc 100%);">
-    <div class="container">
-        <div style="max-width: 600px; margin: 0 auto;">
-            <x-newsletter-form />
-        </div>
-    </div>
-</section>
-
 @endsection
