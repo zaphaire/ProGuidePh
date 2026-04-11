@@ -121,11 +121,15 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
+        $postTitle = $post->title;
+        
         if ($post->featured_image) {
             Storage::disk('public')->delete($post->featured_image);
         }
-        $post->delete();
+        
+        $post->comments()->delete();
+        $post->forceDelete();
 
-        return redirect()->route('admin.posts.index')->with('success', 'Post deleted successfully!');
+        return redirect()->route('admin.posts.index')->with('success', '"' . $postTitle . '" deleted permanently!');
     }
 }
