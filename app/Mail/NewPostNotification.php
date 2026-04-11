@@ -21,14 +21,16 @@ class NewPostNotification extends Mailable
 
     public function envelope(): Envelope
     {
+        $fromAddress = config('mail.from.address', 'noreply@' . request()->getHost());
+        
         return new Envelope(
             subject: '[' . config('app.name') . '] ' . $this->post->title,
             from: new \Illuminate\Mail\Mailables\Address(
-                config('mail.from.address', 'noreply@' . request()->getHost()),
+                $fromAddress,
                 config('mail.from.name', config('app.name'))
             ),
             using: [
-                'List-Unsubscribe' => '<mailto:' . config('mail.from.address') . '?subject=unsubscribe>',
+                'List-Unsubscribe' => '<mailto:' . $fromAddress . '?subject=unsubscribe>',
             ],
         );
     }
