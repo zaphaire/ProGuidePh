@@ -48,6 +48,8 @@ Route::middleware('auth')->group(function () {
 // Admin Routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('system', [\App\Http\Controllers\Admin\SystemController::class, 'index'])->name('system');
+    Route::post('system/clear-cache', [\App\Http\Controllers\Admin\SystemController::class, 'clearCache'])->name('system.clear-cache');
 
     // Posts
     Route::resource('posts', \App\Http\Controllers\Admin\PostController::class);

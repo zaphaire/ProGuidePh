@@ -244,6 +244,9 @@
         <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <span class="icon">📊</span> Dashboard
         </a>
+        <a href="{{ route('admin.system') }}" class="nav-item {{ request()->routeIs('admin.system') ? 'active' : '' }}">
+            <span class="icon">⚙️</span> System
+        </a>
 
         <div class="nav-section">Content</div>
         <a href="{{ route('admin.posts.index') }}" class="nav-item {{ request()->routeIs('admin.posts.*') ? 'active' : '' }}">
