@@ -111,6 +111,16 @@ class VerifyOtpController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
+        DB::table('login_logs')->insert([
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'success' => true,
+            'failure_reason' => null,
+            'created_at' => now(),
+        ]);
+
         Mail::to($user)->send(new LoginAlertMail(
             $user,
             true,

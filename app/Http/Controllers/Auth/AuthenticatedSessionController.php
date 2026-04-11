@@ -75,16 +75,6 @@ class AuthenticatedSessionController extends Controller
 
         Mail::to($user)->send(new LoginOtpCode($otpCode, $user->name));
 
-        DB::table('login_logs')->insert([
-            'user_id' => $user->id,
-            'email' => $email,
-            'ip_address' => $ipAddress,
-            'user_agent' => $userAgent,
-            'success' => true,
-            'failure_reason' => null,
-            'created_at' => now(),
-        ]);
-
         session([
             'pending_user_id' => $user->id,
             'otp_ip_bound' => $ipAddress,
