@@ -5,15 +5,6 @@
     <form method="POST" action="{{ route('password.store') }}">
         @csrf
 
-        <!-- Password Reset Token -->
-        <input type="hidden" name="token" value="{{ $request->route('token') }}">
-
-        <div class="form-group">
-            <label class="form-label">Email Address</label>
-            <input type="hidden" name="email" value="{{ $request->email }}">
-            <input type="text" class="form-input" value="{{ $request->email }}" readonly style="background-color: #e5e5e5; cursor: not-allowed; color: #666;">
-        </div>
-
         <div class="form-group">
             <label class="form-label">New Password</label>
             <input type="password" name="password" class="form-input" required placeholder="••••••••">

@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -16,48 +17,77 @@ use Illuminate\View\View;
 
 class NewPasswordController extends Controller
 {
-    /**
-     * Display the password reset view.
-     */
-    public function create(Request $request): View
+    public function create(Request $request)
     {
-        return view('auth.reset-password', ['request' => $request]);
+        $token = $request->route('token');
+
+        $record = DB::table('password_reset_tokens')
+            ->where('token', $token)
+            ->first();
+
+        if (!$record) {
+            return redirect()->route('password.request')
+                ->withErrors(['email' => 'Invalid password reset link.']);
+        }
+
+        $user = User::where('email', $record->email)->first();
+
+        if (!$user) {
+            return redirect()->route('password.request')
+                ->withErrors(['email' => 'User not found.']);
+        }
+
+        $request->session()->put('reset_password_user_id', $user->id);
+        $request->session()->put('reset_password_token', $token);
+
+        return view('auth.reset-password');
     }
 
-    /**
-     * Handle an incoming new password request.
-     *
-     * @throws ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
+        $userId = $request->session()->get('reset_password_user_id');
+        $token = $request->session()->get('reset_password_token');
+
+        if (!$userId || !$token) {
+            return redirect()->route('password.request')
+                ->withErrors(['email' => 'Password reset session expired.']);
+        }
+
         $request->validate([
-            'token' => ['required'],
-            'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function (User $user) use ($request) {
-                $user->forceFill([
-                    'password' => Hash::make($request->password),
-                    'remember_token' => Str::random(60),
-                ])->save();
+        $user = User::find($userId);
 
-                event(new PasswordReset($user));
-            }
-        );
+        if (!$user) {
+            return redirect()->route('password.request')
+                ->withErrors(['email' => 'User not found.']);
+        }
 
-        // If the password was successfully reset, we will redirect the user back to
-        // the application's home authenticated view. If there is an error we can
-        // redirect them back to where they came from with their error message.
-        return $status == Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        $record = DB::table('password_reset_tokens')
+            ->where('token', $token)
+            ->where('email', $user->email)
+            ->first();
+
+        if (!$record) {
+            return redirect()->route('password.request')
+                ->withErrors(['email' => 'Invalid token.']);
+        }
+
+        $user->forceFill([
+            'password' => Hash::make($request->password),
+            'remember_token' => Str::random(60),
+        ])->save();
+
+        DB::table('password_reset_tokens')
+            ->where('email', $user->email)
+            ->delete();
+
+        $request->session()->forget('reset_password_user_id');
+        $request->session()->forget('reset_password_token');
+
+        event(new PasswordReset($user));
+
+        return redirect()->route('login')->with('status', 'Password has been reset successfully.');
     }
 }
