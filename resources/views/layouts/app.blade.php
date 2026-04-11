@@ -515,9 +515,6 @@
                         <input type="email" name="email" placeholder="Your email" required style="flex:1;padding:.5rem .875rem;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-size:.875rem;outline:none" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(255,255,255,.2)'">
                         <button type="submit" style="padding:.5rem 1rem;border-radius:8px;background:var(--primary);color:#fff;font-size:.875rem;font-weight:600;border:none;cursor:pointer;transition:background .2s" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">Subscribe</button>
                     </form>
-                    @if(session('message'))
-                        <p style="color:#4ade80;font-size:.75rem;margin-top:.5rem">{{ session('message') }}</p>
-                    @endif
                 </div>
             </div>
             <div class="footer-col">

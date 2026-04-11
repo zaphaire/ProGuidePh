@@ -13,7 +13,11 @@
             </div>
         </div>
         
-        <form @submit.prevent="submit">
+        <div x-show="message" x-transition class="mb-4 p-3 rounded-lg" :class="messageType === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'">
+            <span x-text="message"></span>
+        </div>
+        
+        <form x-show="!message || messageType === 'error'" @submit.prevent="submit">
             <div class="flex flex-col sm:flex-row gap-3">
                 <div class="flex-1">
                     <input 
@@ -43,11 +47,7 @@
             </div>
         </form>
         
-        <div x-show="message" x-transition class="mt-3 text-sm" :class="messageType === 'success' ? 'text-green-600' : 'text-red-600'">
-            <span x-text="message"></span>
-        </div>
-        
-        <p class="text-xs text-gray-400 mt-3">No spam. Unsubscribe anytime.</p>
+        <p x-show="!message" class="text-xs text-gray-400 mt-3">No spam. Unsubscribe anytime.</p>
     </div>
 </div>
 
