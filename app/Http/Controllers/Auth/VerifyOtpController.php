@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\LoginAlertMail;
 use App\Mail\LoginOtpCode;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -109,6 +110,14 @@ class VerifyOtpController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+
+        Mail::to($user)->send(new LoginAlertMail(
+            $user,
+            true,
+            $request->ip(),
+            $request->userAgent(),
+            now()->format('F j, Y g:i A')
+        ));
 
         $intended = $user->isAdmin() ? route('admin.dashboard') : route('home');
 
