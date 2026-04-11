@@ -24,9 +24,23 @@ class Post extends Model
     {
         static::creating(function ($post) {
             if (empty($post->slug)) {
-                $post->slug = Str::slug($post->title);
+                $post->slug = static::uniqueSlugFrom($post->title);
             }
         });
+    }
+
+    public static function uniqueSlugFrom(string $title): string
+    {
+        $slug = Str::slug($title);
+        $originalSlug = $slug;
+        $counter = 1;
+
+        while (static::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $counter;
+            $counter++;
+        }
+
+        return $slug;
     }
 
     public function user(): BelongsTo
