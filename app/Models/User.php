@@ -14,7 +14,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'avatar', 'bio',
+        'name', 'email', 'password', 'role', 'avatar', 'bio', 'otp_code', 'otp_expires_at', 'is_otp_verified',
     ];
 
     protected $hidden = [
@@ -25,6 +25,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'otp_expires_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

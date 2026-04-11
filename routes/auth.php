@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\VerifyOtpController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -17,6 +18,10 @@ Route::middleware('guest')->group(function () {
 
     Route::get('pgph-admin-access', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('pgph-admin-access', [AuthenticatedSessionController::class, 'store']);
+
+    Route::get('verify-otp', [VerifyOtpController::class, 'show'])->name('otp.verify');
+    Route::post('verify-otp', [VerifyOtpController::class, 'verify'])->name('otp.verify');
+    Route::post('resend-otp', [VerifyOtpController::class, 'resend'])->name('otp.resend');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
