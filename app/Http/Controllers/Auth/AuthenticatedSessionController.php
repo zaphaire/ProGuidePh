@@ -50,14 +50,26 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        $otpCode = $this->generateSecureOtp();
+        if ($user) {
+            $otpCode = $this->generateSecureOtp();
+            $hashedOtp = hash('sha256', $otpCode);
 
-        $hashedOtp = hash('sha256', $otpCode);
+            \Illuminate\Support\Facades\DB::table('users')
+                ->where('id', $user->id)
+                ->update([
+                    'otp_code' => $hashedOtp,
+                    'otp_expires_at' => now()->addMinutes(10),
+                    'is_otp_verified' => false,
+                ]);
 
-        $user->otp_code = $hashedOtp;
-        $user->otp_expires_at = now()->addMinutes(10);
-        $user->is_otp_verified = false;
-        $user->save();
+            Mail::to($user)->send(new LoginOtpCode($otpCode, $user->name));
+
+            session([
+                'pending_user_id' => $user->id,
+                'otp_ip_bound' => $ipAddress,
+                'otp_generated_at' => time(),
+            ]);
+        }
 
         Mail::to($user)->send(new LoginOtpCode($otpCode, $user->name));
 

@@ -94,10 +94,13 @@ class VerifyOtpController extends Controller
 
         session([$attemptsKey => 0, 'otp_locked_until' => null]);
 
-        $user->otp_code = null;
-        $user->otp_expires_at = null;
-        $user->is_otp_verified = true;
-        $user->save();
+        DB::table('users')
+            ->where('id', $user->id)
+            ->update([
+                'otp_code' => null,
+                'otp_expires_at' => null,
+                'is_otp_verified' => true,
+            ]);
 
         session()->forget('pending_user_id');
         session()->forget('otp_ip_bound');
@@ -134,9 +137,12 @@ class VerifyOtpController extends Controller
         $otpCode = $this->generateSecureOtp();
         $hashedOtp = hash('sha256', $otpCode);
 
-        $user->otp_code = $hashedOtp;
-        $user->otp_expires_at = now()->addMinutes(10);
-        $user->save();
+        DB::table('users')
+            ->where('id', $user->id)
+            ->update([
+                'otp_code' => $hashedOtp,
+                'otp_expires_at' => now()->addMinutes(10),
+            ]);
 
         Mail::to($user)->send(new LoginOtpCode($otpCode, $user->name));
 
