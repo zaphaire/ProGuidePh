@@ -313,7 +313,7 @@
                     </div>
 
                     <div style="display:flex;gap:1rem;margin-top:1rem">
-                        <button type="submit" class="btn btn-primary-admin" style="flex:1">Update Post</button>
+                        <button type="button" onclick="submitEditForm()" class="btn btn-primary-admin" style="flex:1">Update Post</button>
                         <button type="button" onclick="closeModal('editPostModal')" class="btn btn-ghost" style="flex:1">Cancel</button>
                     </div>
                 </div>
@@ -416,8 +416,28 @@ document.getElementById('editPostForm')?.addEventListener('submit', function(e) 
     const postId = document.getElementById('editPostId').value;
     if (postId) {
         this.action = '/admin/posts/' + postId;
+    } else {
+        e.preventDefault();
+        alert('Error: Post ID not found. Please try again.');
     }
 });
+
+function submitEditForm() {
+    const postId = document.getElementById('editPostId').value;
+    if (!postId) {
+        alert('Error: Post ID not found. Please try again.');
+        return;
+    }
+    
+    // Sync TinyMCE content to textarea
+    if (typeof tinymce !== 'undefined' && tinymce.get('tinymce-editor-edit')) {
+        tinymce.get('tinymce-editor-edit').save();
+    }
+    
+    const form = document.getElementById('editPostForm');
+    form.action = '/admin/posts/' + postId;
+    form.submit();
+}
 
 document.getElementById('dashboardImageUrl')?.addEventListener('input', function(e) {
     const url = e.target.value.trim();
