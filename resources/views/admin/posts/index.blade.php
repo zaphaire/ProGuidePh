@@ -336,7 +336,7 @@ let editTinymceInitialized = false;
 
 function openEditModal(postId) {
     console.log('Opening edit modal for post:', postId);
-    fetch('/admin/posts-data/' + postId)
+    fetch('/admin/get-post-data/' + postId)
         .then(res => {
             console.log('Response status:', res.status);
             if (!res.ok) throw new Error('Network error: ' + res.status);
