@@ -360,29 +360,30 @@ function openEditModal(postId) {
             
             document.getElementById('editPostModal').style.display = 'flex';
             
-            if (!editTinymceInitialized) {
-                tinymce.init({
-                    selector: '#tinymce-editor-edit',
-                    skin: 'oxide-dark',
-                    content_css: 'dark',
-                    height: 300,
-                    menubar: true,
-                    plugins: ['advlist','autolink','lists','link','image','charmap','preview','anchor','searchreplace','visualblocks','code','fullscreen','insertdatetime','media','table','help','wordcount'],
-                    toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image link | help',
-                    content_style: 'body { font-family: Inter, sans-serif; font-size: 14px; }',
-                    promotion: false,
-                    setup: function(editor) {
-                        editor.on('init', function() {
-                            editor.setContent(post.body || '');
-                            editTinymceInitialized = true;
-                        });
-                    }
-                });
-            } else {
-                setTimeout(() => {
+            // Show modal first, then initialize TinyMCE
+            setTimeout(() => {
+                if (!editTinymceInitialized) {
+                    tinymce.init({
+                        selector: '#tinymce-editor-edit',
+                        skin: 'oxide-dark',
+                        content_css: 'dark',
+                        height: 300,
+                        menubar: false,
+                        plugins: 'lists link preview anchor searchreplace visualblocks code fullscreen insertdatetime table help wordcount',
+                        toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | link | help',
+                        content_style: 'body { font-family: Inter, sans-serif; font-size: 14px; }',
+                        promotion: false,
+                        setup: function(editor) {
+                            editor.on('init', function() {
+                                editor.setContent(post.body || '');
+                                editTinymceInitialized = true;
+                            });
+                        }
+                    });
+                } else {
                     tinymce.get('tinymce-editor-edit').setContent(post.body || '');
-                }, 100);
-            }
+                }
+            }, 200);
         })
         .catch(err => {
             console.error('Error fetching post:', err);
