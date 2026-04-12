@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\NewsletterConfirmation;
+use App\Mail\NewsletterUnsubscribed;
 use App\Models\Subscriber;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -93,7 +94,15 @@ class NewsletterController extends Controller
         $subscriber = Subscriber::where('email', $email)->first();
 
         if ($subscriber) {
-            $subscriber->unsubscribe();
+            $emailAddress = $subscriber->email;
+            
+            try {
+                Mail::to($emailAddress)->send(new NewsletterUnsubscribed($emailAddress));
+            } catch (\Exception $e) {
+                Log::error('Failed to send unsubscribe confirmation email: ' . $e->getMessage());
+            }
+            
+            $subscriber->delete();
             return back()->with('message', 'You have been unsubscribed successfully.');
         }
 
@@ -105,7 +114,15 @@ class NewsletterController extends Controller
         $subscriber = Subscriber::where('email', urldecode($email))->first();
 
         if ($subscriber) {
-            $subscriber->unsubscribe();
+            $emailAddress = $subscriber->email;
+            
+            try {
+                Mail::to($emailAddress)->send(new NewsletterUnsubscribed($emailAddress));
+            } catch (\Exception $e) {
+                Log::error('Failed to send unsubscribe confirmation email: ' . $e->getMessage());
+            }
+            
+            $subscriber->delete();
             return redirect('/')->with('message', 'You have been unsubscribed successfully.');
         }
 
