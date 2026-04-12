@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Page;
+use App\Mail\ContactFormSubmitted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class PageController extends Controller
 {
@@ -32,8 +34,12 @@ class PageController extends Controller
             'message' => 'required|string|max:2000',
         ]);
 
-        // Log contact to mail log (swap to real mailer in production)
-        \Log::info('Contact Form Submission', $validated);
+        try {
+            Mail::to('info@proguideph.com')->send(new ContactFormSubmitted($validated));
+            Log::info('Contact form email sent to info@proguideph.com', $validated);
+        } catch (\Exception $e) {
+            Log::error('Failed to send contact form email: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Your message has been sent! We will get back to you shortly.');
     }
