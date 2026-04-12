@@ -86,14 +86,7 @@
                 @endforeach
             </div>
 
-            <div class="card" style="padding:1.5rem;border-radius:16px;border:1px solid var(--border-light);background:linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);color:#fff">
-                <h3 style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.75rem">📬 Stay Updated!</h3>
-                <p style="font-size:.875rem;opacity:.85;margin-bottom:1rem">Get the latest articles delivered to your inbox</p>
-                <form style="display:flex;gap:.5rem">
-                    <input type="email" placeholder="Your email" style="flex:1;padding:.6rem .9rem;border:none;border-radius:8px;font-size:.875rem">
-                    <button type="button" style="background:var(--accent);color:var(--primary-dark);border:none;padding:.6rem 1rem;border-radius:8px;font-weight:600;cursor:pointer">Join</button>
-                </form>
-            </div>
+
         </aside>
     </div>
 </div>
