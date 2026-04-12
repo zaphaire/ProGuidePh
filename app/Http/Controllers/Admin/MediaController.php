@@ -28,10 +28,12 @@ class MediaController extends Controller
         }
 
         foreach ($request->file('files') as $file) {
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $extension = $file->getClientOriginalExtension() ?: 'jpg';
+            $filename = time() . '_' . uniqid() . '.' . $extension;
             $file->move($uploadDir, $filename);
             
             $fileUrl = url('storage/media/' . $filename);
+            $mimeType = $file->getMimeType() ?: 'image/jpeg';
             
             Media::create([
                 'user_id' => auth()->id(),
@@ -39,7 +41,7 @@ class MediaController extends Controller
                 'original_name' => $file->getClientOriginalName(),
                 'path' => 'media/' . $filename,
                 'url' => $fileUrl,
-                'mime_type' => $file->getMimeType(),
+                'mime_type' => $mimeType,
                 'size' => $file->getSize(),
                 'disk' => 'public',
             ]);
