@@ -59,6 +59,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Categories
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->except(['show']);
+    Route::get('get-category-data/{category:id}', [\App\Http\Controllers\Admin\CategoryController::class, 'editData'])->name('categories.get-data');
 
     // Pages
     Route::resource('pages', \App\Http\Controllers\Admin\PageController::class)->except(['show']);

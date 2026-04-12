@@ -46,6 +46,18 @@ class CategoryController extends Controller
         return redirect()->route('admin.categories.index')->with('success', 'Category updated!');
     }
 
+    public function editData(Category $category)
+    {
+        return response()->json([
+            'id' => $category->id,
+            'name' => $category->name,
+            'slug' => $category->slug,
+            'color' => $category->color,
+            'icon' => $category->icon,
+            'description' => $category->description,
+        ]);
+    }
+
     public function destroy(Category $category)
     {
         $category->delete();
