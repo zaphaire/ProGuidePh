@@ -6,8 +6,8 @@
 
     <div style="background:linear-gradient(135deg,var(--primary),#2d5490);color:#fff;padding:2rem 1rem" class="contact-page-header">
         <div class="container">
-            <h1 style="font-family:'Merriweather',serif;font-size:1.75rem;font-weight:700;margin-bottom:.5rem">📬 Contact Us</h1>
-            <p style="color:rgba(255,255,255,.75);font-size:.95rem">We'd love to hear from you</p>
+            <h1 style="font-family:'Merriweather',serif;font-size:1.75rem;font-weight:700;margin-bottom:.5rem;text-align:center">📬 Contact Us</h1>
+            <p style="color:rgba(255,255,255,.75);font-size:.95rem;text-align:center">We'd love to hear from you</p>
         </div>
     </div>
 
