@@ -19,10 +19,10 @@ class MediaController extends Controller
     {
         $request->validate([
             'files' => 'required',
-            'files.*' => 'max:5120',
         ]);
 
         $publicDir = public_path('uploads');
+        
         if (!File::exists($publicDir)) {
             File::makeDirectory($publicDir, 0755, true);
         }
@@ -30,29 +30,32 @@ class MediaController extends Controller
         $count = 0;
         
         foreach ($request->file('files') as $file) {
-            $original = $file->getClientOriginalName();
-            $ext = pathinfo($original, PATHINFO_EXTENSION);
-            $base = pathinfo($original, PATHINFO_FILENAME);
-            $filename = time() . '_' . substr(md5($base), 0, 8) . ($ext ? '.' . $ext : '');
+            if (!$file || !$file->isValid()) {
+                continue;
+            }
             
-            $file->move($publicDir, $filename);
+            $originalName = $file->getClientOriginalName();
+            $extension = strtolower($file->getClientOriginalExtension());
+            $baseName = pathinfo($originalName, PATHINFO_FILENAME);
             
-            $url = '/uploads/' . $filename;
+            $newFilename = time() . $count . '_' . substr(md5($baseName), 0, 6) . '.' . ($extension ?: 'jpg');
+            
+            $file->copy($publicDir . '/' . $newFilename);
             
             Media::create([
                 'user_id' => auth()->id(),
-                'filename' => $filename,
-                'original_name' => $original,
-                'path' => 'uploads/' . $filename,
-                'url' => $url,
-                'mime_type' => $file->getMimeType() ?: 'application/octet-stream',
-                'size' => $file->getSize(),
+                'filename' => $newFilename,
+                'original_name' => $originalName,
+                'path' => 'uploads/' . $newFilename,
+                'url' => '/uploads/' . $newFilename,
+                'mime_type' => $file->getMimeType() ?: 'image/jpeg',
+                'size' => filesize($publicDir . '/' . $newFilename),
                 'disk' => 'public',
             ]);
             
             $count++;
         }
-        
+
         return back()->with('success', $count . ' file(s) uploaded!');
     }
 
