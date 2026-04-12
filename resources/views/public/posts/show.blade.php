@@ -161,7 +161,7 @@
             </div>
 
             {{-- Sidebar --}}
-            <aside style="position:sticky;top:100px">
+            <aside style="position:relative;z-index:10">
                 @if($relatedPosts->isNotEmpty())
                     <div class="card" style="padding:1.4rem;margin-bottom:1.5rem">
                         <h3 style="font-weight:700;color:var(--primary);margin-bottom:1rem;font-size:.95rem">Related Articles</h3>
