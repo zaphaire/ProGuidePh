@@ -88,27 +88,23 @@ class PostController extends Controller
         return view('admin.posts.edit', compact('post', 'categories'));
     }
 
-    public function editData(Post $post)
+    public function editData($id)
     {
-        try {
-            Log::info('editData called for post id: ' . $post->id . ' slug: ' . $post->slug);
-            return response()->json([
-                'id' => $post->id,
-                'title' => $post->title,
-                'slug' => $post->slug,
-                'excerpt' => $post->excerpt,
-                'body' => $post->body,
-                'status' => $post->status,
-                'category_id' => $post->category_id,
-                'is_featured' => $post->is_featured,
-                'featured_image' => $post->featured_image,
-                'meta_title' => $post->meta_title,
-                'meta_description' => $post->meta_description,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('editData error: ' . $e->getMessage());
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        $post = Post::findOrFail($id);
+        Log::info('editData called for post id: ' . $post->id . ' slug: ' . $post->slug);
+        return response()->json([
+            'id' => $post->id,
+            'title' => $post->title,
+            'slug' => $post->slug,
+            'excerpt' => $post->excerpt,
+            'body' => $post->body,
+            'status' => $post->status,
+            'category_id' => $post->category_id,
+            'is_featured' => $post->is_featured,
+            'featured_image' => $post->featured_image,
+            'meta_title' => $post->meta_title,
+            'meta_description' => $post->meta_description,
+        ]);
     }
 
     public function update(Request $request, Post $post)

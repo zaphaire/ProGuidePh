@@ -44,8 +44,9 @@ class PageController extends Controller
         return view('admin.pages.edit', compact('page'));
     }
 
-    public function editData(Page $page)
+    public function editData($id)
     {
+        $page = Page::findOrFail($id);
         return response()->json([
             'id' => $page->id,
             'title' => $page->title,

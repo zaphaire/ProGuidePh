@@ -46,8 +46,9 @@ class CategoryController extends Controller
         return redirect()->route('admin.categories.index')->with('success', 'Category updated!');
     }
 
-    public function editData(Category $category)
+    public function editData($id)
     {
+        $category = Category::findOrFail($id);
         return response()->json([
             'id' => $category->id,
             'name' => $category->name,
