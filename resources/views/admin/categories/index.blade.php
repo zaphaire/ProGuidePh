@@ -149,12 +149,15 @@ function openCreateModal() {
 }
 
 function openEditModal(categoryId) {
+    console.log('Opening edit modal for category:', categoryId);
     fetch('/admin/get-category-data/' + categoryId)
         .then(res => {
-            if (!res.ok) throw new Error('Failed to load');
+            console.log('Response status:', res.status);
+            if (!res.ok) throw new Error('Failed to load: ' + res.status);
             return res.json();
         })
         .then(cat => {
+            console.log('Category data:', cat);
             document.getElementById('editCatId').value = cat.id;
             document.getElementById('editCatName').value = cat.name || '';
             document.getElementById('editCatIcon').value = cat.icon || '';
@@ -163,10 +166,11 @@ function openEditModal(categoryId) {
             document.getElementById('editCatDescription').value = cat.description || '';
             document.getElementById('editCategoryForm').action = '/admin/categories/' + cat.id;
             document.getElementById('editCategoryModal').style.display = 'flex';
+            console.log('Modal should be visible now');
         })
         .catch(err => {
-            console.error(err);
-            alert('Failed to load category data. Please try again.');
+            console.error('Error:', err);
+            alert('Failed to load category data. Please try again. Error: ' + err.message);
         });
 }
 
