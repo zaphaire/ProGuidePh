@@ -19,26 +19,34 @@ class MediaController extends Controller
     {
         $request->validate([
             'files' => 'required',
-            'files.*' => 'file|max:5120',
+            'files.*' => 'max:5120',
         ]);
 
+        $count = 0;
+        
         foreach ($request->file('files') as $file) {
-            $filename = time() . '_' . md5($file->getClientOriginalName()) . '.' . ($file->getClientOriginalExtension() ?: 'jpg');
+            $original = $file->getClientOriginalName();
+            $ext = pathinfo($original, PATHINFO_EXTENSION);
+            $base = pathinfo($original, PATHINFO_FILENAME);
+            $filename = time() . '_' . substr(md5($base), 0, 8) . ($ext ? '.' . $ext : '');
             
-            // Store directly in the media disk root (which is public/media)
             $path = $file->storeAs('', $filename, 'public');
             
             Media::create([
                 'user_id' => auth()->id(),
                 'filename' => $filename,
-                'original_name' => $file->getClientOriginalName(),
+                'original_name' => $original,
                 'path' => $path,
                 'url' => Storage::disk('public')->url($path),
-                'mime_type' => $file->getMimeType() ?: 'image/jpeg',
-                'size' => Storage::disk('public')->size($path),
+                'mime_type' => $file->getMimeType() ?: 'application/octet-stream',
+                'size' => $file->getSize(),
                 'disk' => 'public',
             ]);
+            
+            $count++;
         }
+        
+        return back()->with('success', $count . ' file(s) uploaded!');
 
         return back()->with('success', count($request->file('files')) . ' file(s) uploaded!');
     }
