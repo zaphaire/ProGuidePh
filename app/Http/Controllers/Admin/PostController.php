@@ -88,6 +88,11 @@ class PostController extends Controller
         return view('admin.posts.edit', compact('post', 'categories'));
     }
 
+    public function editData(Post $post)
+    {
+        return response()->json($post);
+    }
+
     public function update(Request $request, Post $post)
     {
         $validated = $request->validate([

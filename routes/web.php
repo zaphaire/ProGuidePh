@@ -55,6 +55,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Posts
     Route::resource('posts', \App\Http\Controllers\Admin\PostController::class);
+    Route::get('posts/{post}/edit-data', [\App\Http\Controllers\Admin\PostController::class, 'editData'])->name('posts.edit-data');
 
     // Categories
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->except(['show']);
