@@ -687,6 +687,9 @@
                         } else {
                             this.message = data.message || 'Already subscribed!';
                             this.messageType = 'error';
+                            this.timeout = setTimeout(() => {
+                                this.message = '';
+                            }, 10000);
                         }
                     } catch (e) {
                         console.error('Newsletter error:', e);
