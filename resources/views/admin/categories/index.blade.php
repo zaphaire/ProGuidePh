@@ -63,12 +63,12 @@
 
 {{-- Create Modal --}}
 <div id="createCategoryModal" class="modal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5);align-items:center;justify-content:center">
-    <div class="modal-content" style="background:#fff;border-radius:12px;width:95%;max-width:500px;max-height:90vh;overflow-y:auto;margin:1rem">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+    <div class="modal-content" style="background:var(--bg-card);border-radius:12px;width:95%;max-width:500px;max-height:90vh;overflow-y:auto;margin:1rem">
+        <div style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
             <h3 style="font-size:1.25rem;font-weight:700;color:var(--text-header)" id="createModalTitle">Add Category</h3>
             <button onclick="closeModal('createCategoryModal')" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)">&times;</button>
         </div>
-        <form method="POST" id="createCategoryForm" action="{{ route('admin.categories.store') }}">
+        <form method="POST" id="createCategoryForm" action="{{ route('admin.categories.store') }}" style="padding:1.5rem">
             @csrf
             <div class="form-group">
                 <label class="form-label">Name *</label>
@@ -99,12 +99,12 @@
 
 {{-- Edit Modal --}}
 <div id="editCategoryModal" class="modal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5);align-items:center;justify-content:center">
-    <div class="modal-content" style="background:#fff;border-radius:12px;width:95%;max-width:500px;max-height:90vh;overflow-y:auto;margin:1rem">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+    <div class="modal-content" style="background:var(--bg-card);border-radius:12px;width:95%;max-width:500px;max-height:90vh;overflow-y:auto;margin:1rem">
+        <div style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
             <h3 style="font-size:1.25rem;font-weight:700;color:var(--text-header)">Edit Category</h3>
             <button onclick="closeModal('editCategoryModal')" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)">&times;</button>
         </div>
-        <form method="POST" id="editCategoryForm" action="">
+        <form method="POST" id="editCategoryForm" action="" style="padding:1.5rem">
             @csrf
             @method('PUT')
             <input type="hidden" id="editCatId">
