@@ -369,7 +369,8 @@ function openEditModal(postId) {
             document.getElementById('editIsFeatured').checked = post.is_featured == 1;
             
             if (post.featured_image) {
-                document.getElementById('editCurrentImage').src = '/storage/' + post.featured_image;
+                const imgSrc = post.featured_image.startsWith('http') ? post.featured_image : '/storage/' + post.featured_image;
+                document.getElementById('editCurrentImage').src = imgSrc;
                 document.getElementById('editCurrentImage').style.display = 'block';
             } else {
                 document.getElementById('editCurrentImage').style.display = 'none';
