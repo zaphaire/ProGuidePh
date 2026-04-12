@@ -81,7 +81,8 @@
 
                         <div class="form-group">
                             <label class="form-label">Featured Image</label>
-                            <input type="file" name="featured_image" class="form-control" accept="image/*" id="modalImageInput">
+                            <input type="url" name="image_url" class="form-control" placeholder="Paste Google Drive or image URL..." id="modalImageUrl">
+                            <p style="font-size:.75rem;color:var(--text-muted);margin-top:.25rem">Paste a Google Drive share link or direct image URL</p>
                             <div id="modalImagePreview" style="margin-top:.75rem;display:none">
                                 <img id="modalPreviewImg" src="" alt="Preview" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover">
                             </div>
@@ -177,7 +178,8 @@
                             <div id="currentImage" style="margin-bottom:.5rem">
                                 <img id="editCurrentImage" src="" alt="Current" style="width:100%;border-radius:8px;max-height:120px;object-fit:cover;display:none">
                             </div>
-                            <input type="file" name="featured_image" class="form-control" accept="image/*" id="editImageInput">
+                            <input type="url" name="image_url" class="form-control" placeholder="Paste Google Drive or image URL..." id="editImageUrl">
+                            <p style="font-size:.75rem;color:var(--text-muted);margin-top:.25rem">Paste a Google Drive share link or direct image URL</p>
                             <div id="editImagePreview" style="margin-top:.75rem;display:none">
                                 <img id="editPreviewImg" src="" alt="Preview" style="width:100%;border-radius:8px;max-height:120px;object-fit:cover">
                             </div>
@@ -308,27 +310,23 @@ function closeModal(id) {
     document.getElementById(id).style.display = 'none';
 }
 
-document.getElementById('modalImageInput')?.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-            document.getElementById('modalPreviewImg').src = ev.target.result;
-            document.getElementById('modalImagePreview').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
+document.getElementById('modalImageUrl')?.addEventListener('input', function(e) {
+    const url = e.target.value.trim();
+    if (url) {
+        document.getElementById('modalPreviewImg').src = url;
+        document.getElementById('modalImagePreview').style.display = 'block';
+    } else {
+        document.getElementById('modalImagePreview').style.display = 'none';
     }
 });
 
-document.getElementById('editImageInput')?.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-            document.getElementById('editPreviewImg').src = ev.target.result;
-            document.getElementById('editImagePreview').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
+document.getElementById('editImageUrl')?.addEventListener('input', function(e) {
+    const url = e.target.value.trim();
+    if (url) {
+        document.getElementById('editPreviewImg').src = url;
+        document.getElementById('editImagePreview').style.display = 'block';
+    } else {
+        document.getElementById('editImagePreview').style.display = 'none';
     }
 });
 

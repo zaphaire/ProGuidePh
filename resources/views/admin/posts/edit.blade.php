@@ -73,11 +73,12 @@
                     <label class="form-label">Featured Image</label>
                     @if($post->featured_image)
                         <div style="margin-bottom:.75rem">
-                            <img src="{{ asset('storage/'.$post->featured_image) }}" alt="Current" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover">
-                            <p style="font-size:.78rem;color:var(--text-muted);margin-top:.4rem">Current image — upload new to replace</p>
+                            <img src="{{ str_starts_with($post->featured_image, 'http') ? $post->featured_image : asset('storage/'.$post->featured_image) }}" alt="Current" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover">
+                            <p style="font-size:.78rem;color:var(--text-muted);margin-top:.4rem">Current image — paste new URL to replace</p>
                         </div>
                     @endif
-                    <input type="file" name="featured_image" class="form-control" accept="image/*">
+                    <input type="url" name="image_url" class="form-control" placeholder="Paste Google Drive or image URL..." value="{{ old('image_url') }}">
+                    <p style="font-size:.75rem;color:var(--text-muted);margin-top:.25rem">Paste a Google Drive share link or direct image URL</p>
                 </div>
                 <div style="display:flex;align-items:center;gap:.75rem;padding:.75rem;background:rgba(245,158,11,.05);border-radius:8px;border:1px solid rgba(245,158,11,.15)">
                     <input type="checkbox" name="is_featured" id="is_featured" value="1" {{ old('is_featured', $post->is_featured) ? 'checked' : '' }} style="width:18px;height:18px;accent-color:#f59e0b">

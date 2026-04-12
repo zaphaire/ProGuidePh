@@ -48,7 +48,7 @@ class PostController extends Controller
             'body'             => 'required|string',
             'status'           => 'required|in:draft,published,archived',
             'is_featured'      => 'boolean',
-            'featured_image'   => 'nullable|image|max:2048',
+            'image_url'        => 'nullable|url',
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
         ]);
@@ -57,16 +57,14 @@ class PostController extends Controller
         $validated['slug']    = Str::slug($validated['title']);
         $validated['is_featured'] = $request->boolean('is_featured');
 
-        Log::info('Post create - media_path: ' . $request->input('media_path'));
+        Log::info('Post create - image_url: ' . $request->input('image_url'));
 
-        if ($request->hasFile('featured_image')) {
+        if ($request->filled('image_url')) {
+            Log::info('Post create - using image URL');
+            $validated['featured_image'] = $request->input('image_url');
+        } elseif ($request->hasFile('featured_image')) {
             Log::info('Post create - using uploaded file');
             $validated['featured_image'] = $request->file('featured_image')->store('posts', 'public');
-        } elseif ($request->filled('media_path')) {
-            Log::info('Post create - using media library: ' . $request->input('media_path'));
-            $mediaPath = $request->input('media_path');
-            // Extract path after /storage/ - e.g., /storage/uploads/xxx.jpg -> uploads/xxx.jpg
-            $validated['featured_image'] = str_replace('/storage/', '', $mediaPath);
         }
 
         if ($validated['status'] === 'published') {
@@ -116,7 +114,7 @@ class PostController extends Controller
             'body'             => 'required|string',
             'status'           => 'required|in:draft,published,archived',
             'is_featured'      => 'boolean',
-            'featured_image'   => 'nullable|image|max:2048',
+            'image_url'        => 'nullable|url',
             'meta_title'       => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
         ]);
@@ -124,8 +122,14 @@ class PostController extends Controller
         $validated['slug']        = Str::slug($validated['title']);
         $validated['is_featured'] = $request->boolean('is_featured');
 
-        if ($request->hasFile('featured_image')) {
-            if ($post->featured_image) {
+        if ($request->filled('image_url')) {
+            // Check if old featured_image is a local file, delete it
+            if ($post->featured_image && !str_starts_with($post->featured_image, 'http')) {
+                Storage::disk('public')->delete($post->featured_image);
+            }
+            $validated['featured_image'] = $request->input('image_url');
+        } elseif ($request->hasFile('featured_image')) {
+            if ($post->featured_image && !str_starts_with($post->featured_image, 'http')) {
                 Storage::disk('public')->delete($post->featured_image);
             }
             $validated['featured_image'] = $request->file('featured_image')->store('posts', 'public');

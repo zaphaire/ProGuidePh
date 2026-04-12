@@ -81,9 +81,10 @@
 
                         <div class="form-group">
                             <label class="form-label">Featured Image</label>
-                            <input type="file" name="featured_image" class="form-control" accept="image/*" id="dashboardImageInput">
+                            <input type="url" name="image_url" class="form-control" placeholder="Paste Google Drive or image URL here..." id="dashboardImageUrl">
+                            <p style="font-size:.75rem;color:var(--text-muted);margin-top:.25rem">Paste a Google Drive share link or direct image URL</p>
                             <div id="dashboardImagePreview" style="margin-top:.75rem;display:none">
-                                <img id="dashboardPreviewImg" src="" alt="Preview" style="width:100%;border-radius:8px;max-height:120px;object-fit:cover">
+                                <img id="dashboardPreviewImg" src="" alt="Preview" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover">
                             </div>
                         </div>
 
@@ -301,7 +302,8 @@
                             <div id="currentImage" style="margin-bottom:.5rem">
                                 <img id="editCurrentImage" src="" alt="Current" style="width:100%;border-radius:8px;max-height:120px;object-fit:cover;display:none">
                             </div>
-                            <input type="file" name="featured_image" class="form-control" accept="image/*" id="editImageInput">
+                            <input type="url" name="image_url" class="form-control" placeholder="Paste Google Drive or image URL..." id="editImageUrl">
+                            <p style="font-size:.75rem;color:var(--text-muted);margin-top:.25rem">Paste a Google Drive share link or direct image URL</p>
                         </div>
 
                         <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem;background:rgba(245,158,11,.05);border-radius:8px">
@@ -409,15 +411,13 @@ function closeModal(id) {
     document.getElementById(id).style.display = 'none';
 }
 
-document.getElementById('dashboardImageInput')?.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-            document.getElementById('dashboardPreviewImg').src = ev.target.result;
-            document.getElementById('dashboardImagePreview').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
+document.getElementById('dashboardImageUrl')?.addEventListener('input', function(e) {
+    const url = e.target.value.trim();
+    if (url) {
+        document.getElementById('dashboardPreviewImg').src = url;
+        document.getElementById('dashboardImagePreview').style.display = 'block';
+    } else {
+        document.getElementById('dashboardImagePreview').style.display = 'none';
     }
 });
 

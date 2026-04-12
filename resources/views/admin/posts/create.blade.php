@@ -77,31 +77,10 @@
 
                 <div class="form-group">
                     <label class="form-label">Featured Image</label>
-                    
-                    <div style="display:flex;gap:.5rem;margin-bottom:.75rem;border-bottom:1px solid var(--border-subtle)">
-                        <button type="button" onclick="switchImageTab('upload')" id="tab-upload" class="img-tab active">Upload New</button>
-                        <button type="button" onclick="switchImageTab('library')" id="tab-library" class="img-tab">Media Library</button>
-                    </div>
-                    
-                    <div id="upload-section">
-                        <input type="file" name="featured_image" class="form-control" accept="image/*" id="imageInput">
-                        <div id="imagePreview" style="margin-top:.75rem;display:none">
-                            <img id="previewImg" src="" alt="Preview" style="width:100%;border-radius:8px;max-height:200px;object-fit:cover">
-                        </div>
-                    </div>
-                    
-                    <div id="library-section" style="display:none">
-                        <input type="hidden" name="media_path" id="selectedMediaPath" value="">
-                        <div id="mediaGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;max-height:250px;overflow-y:auto;padding:.5rem;background:var(--bg-input);border-radius:8px">
-                            @forelse(\App\Models\Media::latest()->take(12)->get() as $media)
-                            <div class="media-item" onclick="selectMedia({{ $media->id }}, '{{ url($media->path) }}')" id="media-{{ $media->id }}" style="cursor:pointer;border:2px solid transparent;border-radius:6px;overflow:hidden">
-                                <img src="{{ url($media->path) }}" alt="" style="width:100%;height:70px;object-fit:cover">
-                            </div>
-                            @empty
-                            <p style="grid-column:span 3;text-align:center;color:var(--text-muted);font-size:.8rem">No images uploaded yet</p>
-                            @endforelse
-                        </div>
-                        <p style="font-size:.7rem;color:var(--text-muted);margin-top:.5rem">Click an image to select</p>
+                    <input type="url" name="image_url" class="form-control" placeholder="Paste Google Drive or image URL..." id="imageUrl">
+                    <p style="font-size:.75rem;color:var(--text-muted);margin-top:.25rem">Paste a Google Drive share link or direct image URL</p>
+                    <div id="imagePreview" style="margin-top:.75rem;display:none">
+                        <img id="previewImg" src="" alt="Preview" style="width:100%;border-radius:8px;max-height:200px;object-fit:cover">
                     </div>
                 </div>
 
@@ -136,38 +115,14 @@ tinymce.init({
     promotion: false,
 });
 
-document.getElementById('imageInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-            document.getElementById('previewImg').src = ev.target.result;
-            document.getElementById('imagePreview').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
+document.getElementById('imageUrl').addEventListener('input', function(e) {
+    const url = e.target.value.trim();
+    if (url) {
+        document.getElementById('previewImg').src = url;
+        document.getElementById('imagePreview').style.display = 'block';
+    } else {
+        document.getElementById('imagePreview').style.display = 'none';
     }
 });
-
-function switchImageTab(tab) {
-    document.getElementById('upload-section').style.display = tab === 'upload' ? 'block' : 'none';
-    document.getElementById('library-section').style.display = tab === 'library' ? 'block' : 'none';
-    document.getElementById('tab-upload').classList.toggle('active', tab === 'upload');
-    document.getElementById('tab-library').classList.toggle('active', tab === 'library');
-}
-
-function selectMedia(id, url) {
-    document.querySelectorAll('.media-item').forEach(function(el) { el.style.borderColor = 'transparent'; });
-    document.getElementById('media-' + id).style.borderColor = '#f59e0b';
-    document.getElementById('selectedMediaPath').value = url;
-    document.getElementById('previewImg').src = url;
-    document.getElementById('imagePreview').style.display = 'block';
-    document.getElementById('imageInput').value = '';
-}
 </script>
-
-<style>
-.img-tab { background:none;border:none;color:var(--text-muted);padding:.5rem 1rem;font-size:.8rem;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px }
-.img-tab.active { color:var(--text-header);border-color:var(--primary);font-weight:600 }
-.media-item:hover { border-color:var(--accent) !important }
-</style>
 @endpush
