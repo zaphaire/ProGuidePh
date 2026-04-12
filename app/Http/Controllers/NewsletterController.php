@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewsletterConfirmation;
 use App\Models\Subscriber;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class NewsletterController extends Controller
@@ -66,7 +68,9 @@ class NewsletterController extends Controller
 
         $subscriber->verify();
 
-        $message = 'Thank you for subscribing!';
+        Mail::to($subscriber)->send(new NewsletterConfirmation($subscriber));
+
+        $message = 'Thank you for subscribing! Check your email for confirmation.';
         
         if ($request->expectsJson()) {
             return response()->json(['message' => $message]);
