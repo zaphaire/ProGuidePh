@@ -29,28 +29,22 @@ class MediaController extends Controller
 
         foreach ($request->file('files') as $file) {
             $mimeType = $file->getMimeType();
+            $originalName = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $newFilename = time() . '_' . uniqid() . '.' . $extension;
+            $path = $file->storeAs('media', $newFilename, 'public');
             
-            if (str_starts_with($mimeType, 'image/')) {
-                $convertedPath = $this->convertToWebP($file);
-                
-                if ($convertedPath) {
-                    $uploadedCount++;
-                }
-            } else {
-                $path = $file->store('media', 'public');
-                
-                Media::create([
-                    'user_id'       => auth()->id(),
-                    'filename'      => basename($path),
-                    'original_name' => $file->getClientOriginalName(),
-                    'path'          => $path,
-                    'url'           => Storage::disk('public')->url($path),
-                    'mime_type'     => $mimeType,
-                    'size'          => $file->getSize(),
-                    'disk'          => 'public',
-                ]);
-                $uploadedCount++;
-            }
+            Media::create([
+                'user_id'       => auth()->id(),
+                'filename'      => $newFilename,
+                'original_name' => $originalName,
+                'path'          => $path,
+                'url'           => Storage::disk('public')->url($path),
+                'mime_type'     => $mimeType,
+                'size'          => $file->getSize(),
+                'disk'          => 'public',
+            ]);
+            $uploadedCount++;
         }
 
         return redirect()->route('admin.media.index')->with('success', $uploadedCount . ' file(s) uploaded successfully!');
