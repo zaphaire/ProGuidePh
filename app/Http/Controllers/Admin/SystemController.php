@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Post;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -17,10 +19,17 @@ class SystemController extends Controller
         $systemStats = $this->getSystemStats();
         $cacheStats = $this->getCacheStats();
         $diskStats = $this->getDiskStats();
+        $contentStats = $this->getContentStats();
+        $userStats = $this->getUserStats();
+        $securityStats = $this->getSecurityStats();
         $loginLogs = $this->getRecentLoginLogs();
         $recentErrors = $this->getRecentErrors();
         
-        return view('admin.system', compact('dbStats', 'systemStats', 'cacheStats', 'diskStats', 'loginLogs', 'recentErrors'));
+        return view('admin.system', compact(
+            'dbStats', 'systemStats', 'cacheStats', 'diskStats', 
+            'contentStats', 'userStats', 'securityStats',
+            'loginLogs', 'recentErrors'
+        ));
     }
     
     public function clearCache()
@@ -89,6 +98,49 @@ class SystemController extends Controller
             'storage_size' => $this->formatBytes($this->getDirectorySize($storagePath)),
             'logs_size' => $this->formatBytes($this->getDirectorySize(storage_path('logs'))),
             'bootstrap_cache' => $this->formatBytes($this->getDirectorySize(storage_path('framework/cache'))),
+        ];
+    }
+    
+    private function getContentStats()
+    {
+        return [
+            'total_posts' => Post::count(),
+            'published_posts' => Post::where('status', 'published')->count(),
+            'draft_posts' => Post::where('status', 'draft')->count(),
+            'total_comments' => Comment::count(),
+            'pending_comments' => Comment::where('is_approved', false)->count(),
+            'total_views' => Post::sum('views'),
+        ];
+    }
+    
+    private function getUserStats()
+    {
+        return [
+            'total_users' => User::count(),
+            'admin_users' => User::where('is_admin', true)->count(),
+            'verified_users' => User::whereNotNull('email_verified_at')->count(),
+            'recent_registrations' => User::where('created_at', '>=', now()->subDays(7))->count(),
+        ];
+    }
+    
+    private function getSecurityStats()
+    {
+        $failedLogins = DB::table('login_logs')
+            ->where('success', false)
+            ->where('failure_reason', '!=', 'Logout')
+            ->where('created_at', '>=', now()->subHours(24))
+            ->count();
+            
+        $failedLoginsWeek = DB::table('login_logs')
+            ->where('success', false)
+            ->where('failure_reason', '!=', 'Logout')
+            ->where('created_at', '>=', now()->subDays(7))
+            ->count();
+            
+        return [
+            'failed_logins_24h' => $failedLogins,
+            'failed_logins_week' => $failedLoginsWeek,
+            'total_logins' => DB::table('login_logs')->count(),
         ];
     }
     
