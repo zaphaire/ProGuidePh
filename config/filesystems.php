@@ -40,11 +40,10 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => public_path('media'),
-            'url' => '/media',
+            'root' => storage_path('app/public'),
+            'url' => '/storage',
             'visibility' => 'public',
             'throw' => false,
-            'report' => false,
         ],
 
         's3' => [
