@@ -183,7 +183,7 @@
                     <div style="font-size:1.5rem;margin-bottom:.75rem">📢</div>
                     <h3 style="font-weight:700;margin-bottom:.5rem">Share this Article</h3>
                     <p style="font-size:.85rem;color:rgba(255,255,255,.7);margin-bottom:1rem">Help others find this content</p>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->full() }}" target="_blank" onclick="navigator.share?navigator.share({title:document.title,url:window.location.href}).catch(()=>{}):void 0" style="display:block;background:rgba(255,255,255,.15);color:#fff;padding:.6rem 1rem;border-radius:8px;text-align:center;font-size:.875rem;font-weight:600;margin-bottom:.5rem">📘 Share on Facebook</a>
+                    <button type="button" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(window.location.href),'facebook-share','width=600,height=400')" style="background:rgba(255,255,255,.15);color:#fff;padding:.6rem 1rem;border-radius:8px;border:none;width:100%;font-size:.875rem;font-weight:600;cursor:pointer;margin-bottom:.5rem">📘 Share on Facebook</button>
                 </div>
 
                 {{-- Sidebar Ad Unit | Replace ca-pub-XXXXXXXXXXXXXXXXX and data-ad-slot value with your real IDs --}}
