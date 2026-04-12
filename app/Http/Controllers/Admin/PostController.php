@@ -9,6 +9,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
@@ -56,8 +57,15 @@ class PostController extends Controller
         $validated['slug']    = Str::slug($validated['title']);
         $validated['is_featured'] = $request->boolean('is_featured');
 
+        Log::info('Post create - media_path: ' . $request->input('media_path'));
+
         if ($request->hasFile('featured_image')) {
+            Log::info('Post create - using uploaded file');
             $validated['featured_image'] = $request->file('featured_image')->store('posts', 'public');
+        } elseif ($request->filled('media_path')) {
+            Log::info('Post create - using media library: ' . $request->input('media_path'));
+            $mediaPath = $request->input('media_path');
+            $validated['featured_image'] = str_replace('/public/', '', $mediaPath);
         }
 
         if ($validated['status'] === 'published') {
