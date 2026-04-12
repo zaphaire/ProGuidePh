@@ -310,8 +310,29 @@ function closeModal(id) {
     document.getElementById(id).style.display = 'none';
 }
 
+function fixGoogleDriveUrl(url) {
+    if (url.includes('drive.google.com')) {
+        let fileId = '';
+        if (url.includes('/file/d/')) {
+            fileId = url.split('/file/d/')[1].split('/')[0];
+        } else if (url.includes('id=')) {
+            fileId = url.split('id=')[1].split('&')[0];
+        } else if (url.includes('/d/')) {
+            fileId = url.split('/d/')[1].split('/')[0];
+        }
+        if (fileId) {
+            return `https://lh3.googleusercontent.com/d/${fileId}`;
+        }
+    }
+    return url;
+}
+
 document.getElementById('modalImageUrl')?.addEventListener('input', function(e) {
-    const url = e.target.value.trim();
+    let url = e.target.value.trim();
+    if (url.includes('drive.google.com')) {
+        url = fixGoogleDriveUrl(url);
+        e.target.value = url;
+    }
     if (url) {
         document.getElementById('modalPreviewImg').src = url;
         document.getElementById('modalImagePreview').style.display = 'block';
@@ -321,7 +342,11 @@ document.getElementById('modalImageUrl')?.addEventListener('input', function(e) 
 });
 
 document.getElementById('editImageUrl')?.addEventListener('input', function(e) {
-    const url = e.target.value.trim();
+    let url = e.target.value.trim();
+    if (url.includes('drive.google.com')) {
+        url = fixGoogleDriveUrl(url);
+        e.target.value = url;
+    }
     if (url) {
         document.getElementById('editPreviewImg').src = url;
         document.getElementById('editImagePreview').style.display = 'block';
@@ -352,13 +377,21 @@ function openEditModal(postId) {
             document.getElementById('editCategory').value = post.category_id || '';
             document.getElementById('editIsFeatured').checked = post.is_featured == 1;
             
-            if (post.featured_image) {
-                // Check if it's a URL or local path
-                const imgSrc = post.featured_image.startsWith('http') ? post.featured_image : '/storage/' + post.featured_image;
-                document.getElementById('editCurrentImage').src = imgSrc;
-                document.getElementById('editCurrentImage').style.display = 'block';
-            } else {
+            if (post.featured_image && post.featured_image.startsWith('http')) {
+                const correctedUrl = fixGoogleDriveUrl(post.featured_image);
+                document.getElementById('editImageUrl').value = correctedUrl;
+                document.getElementById('editPreviewImg').src = correctedUrl;
+                document.getElementById('editImagePreview').style.display = 'block';
                 document.getElementById('editCurrentImage').style.display = 'none';
+            } else if (post.featured_image) {
+                document.getElementById('editImageUrl').value = '';
+                document.getElementById('editCurrentImage').src = '/storage/' + post.featured_image;
+                document.getElementById('editCurrentImage').style.display = 'block';
+                document.getElementById('editImagePreview').style.display = 'none';
+            } else {
+                document.getElementById('editImageUrl').value = '';
+                document.getElementById('editCurrentImage').style.display = 'none';
+                document.getElementById('editImagePreview').style.display = 'none';
             }
             
             document.getElementById('editPostModal').style.display = 'flex';
