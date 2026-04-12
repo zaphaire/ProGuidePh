@@ -26,7 +26,8 @@ class DashboardController extends Controller
         $recentPosts    = Post::with('category', 'user')->latest()->take(5)->get();
         $pendingComments = Comment::with('post')->where('is_approved', false)->latest()->take(5)->get();
         $topPosts       = Post::orderByDesc('views')->take(5)->get();
+        $categories     = Category::orderBy('name')->get();
 
-        return view('admin.dashboard', compact('stats', 'recentPosts', 'pendingComments', 'topPosts'));
+        return view('admin.dashboard', compact('stats', 'recentPosts', 'pendingComments', 'topPosts', 'categories'));
     }
 }
