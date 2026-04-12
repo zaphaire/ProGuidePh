@@ -661,9 +661,11 @@
                 loading: false,
                 message: '',
                 messageType: '',
+                timeout: null,
                 async submit() {
                     this.loading = true;
                     this.message = '';
+                    if (this.timeout) clearTimeout(this.timeout);
                     try {
                         const response = await fetch('{{ route("newsletter.subscribe") }}', {
                             method: 'POST',
@@ -679,6 +681,9 @@
                             this.message = data.message || 'Thank you for subscribing!';
                             this.messageType = 'success';
                             this.email = '';
+                            this.timeout = setTimeout(() => {
+                                this.message = '';
+                            }, 10000);
                         } else {
                             this.message = data.message || 'Something went wrong';
                             this.messageType = 'error';
