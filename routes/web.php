@@ -53,9 +53,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('system', [\App\Http\Controllers\Admin\SystemController::class, 'index'])->name('system');
     Route::post('system/clear-cache', [\App\Http\Controllers\Admin\SystemController::class, 'clearCache'])->name('system.clear-cache');
 
-    // Posts
-    Route::resource('posts', \App\Http\Controllers\Admin\PostController::class);
+    // Posts - place custom routes BEFORE resource to take precedence
     Route::get('get-post-data/{post}', [\App\Http\Controllers\Admin\PostController::class, 'editData'])->name('posts.get-data');
+    Route::resource('posts', \App\Http\Controllers\Admin\PostController::class);
 
     // Categories
     Route::get('get-category-data/{category}', [\App\Http\Controllers\Admin\CategoryController::class, 'editData'])->name('categories.get-data');
