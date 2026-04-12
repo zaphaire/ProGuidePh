@@ -14,7 +14,7 @@
 
 {{-- Create Post Modal (same as posts index) --}}
 <div id="createPostModal" class="modal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5);align-items:center;justify-content:center">
-    <div class="modal-content" style="background:#fff;border-radius:12px;width:95%;max-width:900px;max-height:90vh;overflow-y:auto;margin:1rem">
+    <div class="modal-content" style="background:var(--bg-card);border-radius:12px;width:95%;max-width:900px;max-height:90vh;overflow-y:auto;margin:1rem">
         <div style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
             <h2 style="font-size:1.25rem;font-weight:700;color:var(--text-header)">Create New Post</h2>
             <button onclick="closeModal('createPostModal')" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)">&times;</button>
