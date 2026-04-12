@@ -65,8 +65,8 @@ class PostController extends Controller
         } elseif ($request->filled('media_path')) {
             Log::info('Post create - using media library: ' . $request->input('media_path'));
             $mediaPath = $request->input('media_path');
-            // Convert /public/uploads/xxx.jpg to uploads/xxx.jpg for storage
-            $validated['featured_image'] = 'uploads/' . basename($mediaPath);
+            // Extract path after /storage/ - e.g., /storage/uploads/xxx.jpg -> uploads/xxx.jpg
+            $validated['featured_image'] = str_replace('/storage/', '', $mediaPath);
         }
 
         if ($validated['status'] === 'published') {
