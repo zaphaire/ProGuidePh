@@ -69,7 +69,7 @@
     </div>
 
     @if($post->featured_image_url)
-        <div class="reveal-scale active" style="max-width:1000px;margin:-2rem auto 2rem;padding:0 1.5rem;position:relative;z-index:2">
+        <div class="reveal-scale active" style="max-width:1000px;margin:2rem auto;padding:0 1.5rem;position:relative;z-index:2">
             <div style="background:rgba(255,255,255,0.1);padding:0.75rem;border-radius:24px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);box-shadow:0 30px 60px rgba(0,0,0,0.3);">
                 <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" style="width:100%;border-radius:16px;max-height:550px;object-fit:cover;display:block;transition:all 0.5s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
             </div>
