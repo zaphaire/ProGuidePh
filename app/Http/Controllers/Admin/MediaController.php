@@ -12,8 +12,10 @@ class MediaController extends Controller
 {
     public function index()
     {
-        $media = Media::with('user')->latest()->paginate(24);
-        return view('admin.media.index', compact('media'));
+        $media = Media::with('user')->latest()->get();
+        $totalMedia = Media::count();
+        
+        return view('admin.media.index', compact('media', 'totalMedia'));
     }
 
     public function store(Request $request)
