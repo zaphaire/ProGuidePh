@@ -100,6 +100,18 @@ class NewsletterController extends Controller
         return back()->with('message', 'Email not found in our subscribers list.');
     }
 
+    public function unsubscribeGet(string $email): RedirectResponse
+    {
+        $subscriber = Subscriber::where('email', urldecode($email))->first();
+
+        if ($subscriber) {
+            $subscriber->unsubscribe();
+            return redirect('/')->with('message', 'You have been unsubscribed successfully.');
+        }
+
+        return redirect('/')->with('message', 'Email not found in our subscribers list.');
+    }
+
     public function verify(string $token): RedirectResponse
     {
         $subscriber = Subscriber::where('verify_token', $token)->first();

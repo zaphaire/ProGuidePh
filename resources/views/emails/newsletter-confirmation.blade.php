@@ -51,7 +51,7 @@
         <div class="footer">
             <p>You're receiving this because you subscribed to {{ config('app.name') }}.</p>
             <p style="margin-top:8px">
-                <a href="{{ route('newsletter.unsubscribe', ['email' => $subscriber->email]) }}" style="color:#666;text-decoration:underline">Unsubscribe</a>
+                <a href="{{ route('newsletter.unsubscribe.get', ['email' => $subscriber->email]) }}" style="color:#666;text-decoration:underline">Unsubscribe</a>
             </p>
         </div>
     </div>
