@@ -25,16 +25,17 @@ class MediaController extends Controller
         foreach ($request->file('files') as $file) {
             $filename = time() . '_' . md5($file->getClientOriginalName()) . '.' . ($file->getClientOriginalExtension() ?: 'jpg');
             
-            $path = $file->storeAs('media', $filename, 'public');
+            // Store directly in the media disk root (which is public/media)
+            $path = $file->storeAs('', $filename, 'public');
             
-            $fullPath = storage_path('app/public/' . $path);
+            $fullPath = public_path('media/' . $path);
             
             Media::create([
                 'user_id' => auth()->id(),
                 'filename' => $filename,
                 'original_name' => $file->getClientOriginalName(),
                 'path' => $path,
-                'url' => '/storage/' . $path,
+                'url' => Storage::disk('public')->url($path),
                 'mime_type' => $file->getMimeType() ?: 'image/jpeg',
                 'size' => filesize($fullPath),
                 'disk' => 'public',
