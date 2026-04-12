@@ -35,12 +35,12 @@ class MediaController extends Controller
             }
             
             $originalName = $file->getClientOriginalName();
-            $extension = strtolower($file->getClientOriginalExtension());
             $baseName = pathinfo($originalName, PATHINFO_FILENAME);
+            $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
             
             $newFilename = time() . $count . '_' . substr(md5($baseName), 0, 6) . '.' . ($extension ?: 'jpg');
             
-            $file->copy($publicDir . '/' . $newFilename);
+            $file->move($publicDir, $newFilename);
             
             Media::create([
                 'user_id' => auth()->id(),
@@ -56,7 +56,11 @@ class MediaController extends Controller
             $count++;
         }
 
-        return back()->with('success', $count . ' file(s) uploaded!');
+        if ($count > 0) {
+            return back()->with('success', $count . ' file(s) uploaded!');
+        }
+        
+        return back()->with('error', 'Upload failed. Please try again.');
     }
 
     public function destroy(Media $medium)
