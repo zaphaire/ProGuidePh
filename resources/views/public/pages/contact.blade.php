@@ -23,8 +23,7 @@
                         <span style="font-size:1.5rem">📧</span>
                         <div>
                             <div style="font-weight:600;color:var(--text)">Email</div>
-                            <div style="color:var(--text-muted);font-size:.875rem">{{ \App\Models\Setting::get('site_email',
-                                'support@educornerph.com') }}</div>
+                            <div style="color:var(--text-muted);font-size:.875rem">info@proguideph.com</div>
                         </div>
                     </div>
                     <div class="contact-info-card" style="display:flex;align-items:center;gap:1rem;padding:1rem;background:#fff;border-radius:12px;box-shadow:var(--card-shadow)">
