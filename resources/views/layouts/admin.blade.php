@@ -240,29 +240,19 @@
     </div>
 
     <nav class="sidebar-nav">
-        <div class="nav-section">Overview</div>
         <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <span class="icon">📊</span> Dashboard
         </a>
-        <a href="{{ route('admin.system') }}" class="nav-item {{ request()->routeIs('admin.system') ? 'active' : '' }}">
-            <span class="icon">⚙️</span> System
-        </a>
-
+        
         <div class="nav-section">Content</div>
         <a href="{{ route('admin.posts.index') }}" class="nav-item {{ request()->routeIs('admin.posts.*') ? 'active' : '' }}">
             <span class="icon">📝</span> Posts
         </a>
-        <a href="{{ route('admin.categories.index') }}" class="nav-item {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-            <span class="icon">🏷️</span> Categories
-        </a>
-        <a href="{{ route('admin.pages.index') }}" class="nav-item {{ request()->routeIs('admin.pages.*') ? 'active' : '' }}">
-            <span class="icon">📄</span> Pages
-        </a>
         <a href="{{ route('admin.media.index') }}" class="nav-item {{ request()->routeIs('admin.media.*') ? 'active' : '' }}">
-            <span class="icon">🖼️</span> Media Library
+            <span class="icon">🖼️</span> Media
         </a>
-
-        <div class="nav-section">Community</div>
+        
+        <div class="nav-section">Engage</div>
         <a href="{{ route('admin.comments.index') }}" class="nav-item {{ request()->routeIs('admin.comments.*') ? 'active' : '' }}">
             <span class="icon">💬</span> Comments
             @php $pending = \App\Models\Comment::where('is_approved', false)->count(); @endphp
@@ -270,14 +260,8 @@
                 <span class="nav-badge">{{ $pending }}</span>
             @endif
         </a>
-        <a href="{{ route('admin.announcements.index') }}" class="nav-item {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
-            <span class="icon">📢</span> Announcements
-        </a>
-        <a href="{{ route('admin.forum.topics') }}" class="nav-item {{ request()->routeIs('admin.forum.*') ? 'active' : '' }}">
-            <span class="icon">💬</span> Forum
-        </a>
-
-        <div class="nav-section">Admin</div>
+        
+        <div class="nav-section">Manage</div>
         <a href="{{ route('admin.users.index') }}" class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
             <span class="icon">👥</span> Users
         </a>
@@ -285,16 +269,9 @@
             <span class="icon">⚙️</span> Settings
         </a>
 
-        <div style="padding: 1rem 1.25rem; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,.06);">
-            <a href="{{ route('home') }}" class="nav-item" style="border-radius: 8px;">
-                <span class="icon">🌐</span> View Website
-            </a>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="nav-item" style="width:100%; background:none; border:none; cursor:pointer; color:#94a3b8; border-radius:8px;">
-                    <span class="icon">🚪</span> Logout
-                </button>
-            </form>
+        <div style="padding: 1rem 1.25rem; margin-top: auto;">
+            <a href="{{ route('home') }}" class="nav-item">🌐 Site</a>
+            <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="nav-item" style="width:100%;background:none;border:none;cursor:pointer;">🚪 Logout</button></form>
         </div>
     </nav>
 </aside>
