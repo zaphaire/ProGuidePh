@@ -104,7 +104,7 @@
             <h3 style="font-size:1.25rem;font-weight:700;color:var(--text-header)">Edit Category</h3>
             <button onclick="closeModal('editCategoryModal')" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)">&times;</button>
         </div>
-        <form method="POST" id="editCategoryForm" action="" style="padding:1.5rem">
+        <form method="POST" id="editCategoryForm" action="{{ route('admin.categories.index') }}" style="padding:1.5rem">
             @csrf
             @method('PUT')
             <input type="hidden" id="editCatId">
@@ -128,7 +128,7 @@
                 <textarea name="description" id="editCatDescription" class="form-control" rows="3"></textarea>
             </div>
             <div style="display:flex;gap:1rem;margin-top:1.5rem">
-                <button type="submit" class="btn btn-primary-admin" style="flex:1">Update Category</button>
+                <button type="button" onclick="submitCategoryForm()" class="btn btn-primary-admin" style="flex:1">Update Category</button>
                 <button type="button" onclick="closeModal('editCategoryModal')" class="btn btn-ghost">Cancel</button>
             </div>
         </form>
@@ -176,6 +176,17 @@ function openEditModal(categoryId) {
 
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
+}
+
+function submitCategoryForm() {
+    const catId = document.getElementById('editCatId').value;
+    if (!catId) {
+        alert('Error: Category ID not found. Please try again.');
+        return;
+    }
+    const form = document.getElementById('editCategoryForm');
+    form.action = '/admin/categories/' + catId;
+    form.submit();
 }
 
 document.getElementById('createCatColor').addEventListener('input', function() {

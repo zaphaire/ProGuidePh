@@ -99,7 +99,7 @@
             <h3 style="font-size:1.25rem;font-weight:700;color:var(--text-header)">Edit Page</h3>
             <button onclick="closeModal('editPageModal')" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)">&times;</button>
         </div>
-        <form method="POST" id="editPageForm" action="" style="padding:1.5rem">
+        <form method="POST" id="editPageForm" action="{{ route('admin.pages.index') }}" style="padding:1.5rem">
             @csrf
             @method('PUT')
             <input type="hidden" id="editPageId">
@@ -130,7 +130,7 @@
                 </div>
             </div>
             <div style="display:flex;gap:1rem;margin-top:1.5rem">
-                <button type="submit" class="btn btn-primary-admin" style="flex:1">Update Page</button>
+                <button type="button" onclick="submitPageForm()" class="btn btn-primary-admin" style="flex:1">Update Page</button>
                 <button type="button" onclick="closeModal('editPageModal')" class="btn btn-ghost">Cancel</button>
             </div>
         </form>
@@ -218,6 +218,23 @@ function openEditModal(pageId) {
 
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
+}
+
+function submitPageForm() {
+    const pageId = document.getElementById('editPageId').value;
+    if (!pageId) {
+        alert('Error: Page ID not found. Please try again.');
+        return;
+    }
+    
+    // Sync TinyMCE content to textarea
+    if (typeof tinymce !== 'undefined' && tinymce.get('editPageEditor')) {
+        tinymce.get('editPageEditor').save();
+    }
+    
+    const form = document.getElementById('editPageForm');
+    form.action = '/admin/pages/' + pageId;
+    form.submit();
 }
 
 window.onclick = function(event) {
