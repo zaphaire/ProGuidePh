@@ -79,7 +79,7 @@ class NewsletterController extends Controller
             Log::error('Failed to send newsletter confirmation email: ' . $e->getMessage());
         }
 
-        $message = 'Thank you for subscribing! Check your email for confirmation.';
+        $message = 'Thanks for subscribing! Check your email for confirmation.';
         
         if ($request->expectsJson()) {
             return response()->json(['message' => $message]);

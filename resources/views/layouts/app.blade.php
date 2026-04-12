@@ -678,7 +678,7 @@
                         });
                         const data = await response.json();
                         if (response.ok) {
-                            this.message = data.message || 'Thank you for subscribing!';
+                            this.message = data.message || 'Thanks for subscribing!';
                             this.messageType = 'success';
                             this.email = '';
                             this.timeout = setTimeout(() => {
