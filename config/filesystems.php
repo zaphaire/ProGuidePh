@@ -40,8 +40,8 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            'root' => public_path('storage'),
+            'url' => rtrim(env('APP_URL', 'https://proguideph.com'), ''),
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

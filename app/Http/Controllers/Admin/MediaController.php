@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class MediaController extends Controller
 {
@@ -22,15 +22,23 @@ class MediaController extends Controller
             'files.*' => 'file|max:5120',
         ]);
 
-        foreach ($request->file('files') as $file) {
-            $path = $file->store('media', 'public');
+        $uploadDir = public_path('storage/media');
+        if (!File::exists($uploadDir)) {
+            File::makeDirectory($uploadDir, 0755, true);
+        }
 
+        foreach ($request->file('files') as $file) {
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move($uploadDir, $filename);
+            
+            $fileUrl = url('storage/media/' . $filename);
+            
             Media::create([
                 'user_id' => auth()->id(),
-                'filename' => basename($path),
+                'filename' => $filename,
                 'original_name' => $file->getClientOriginalName(),
-                'path' => $path,
-                'url' => Storage::disk('public')->url($path),
+                'path' => 'media/' . $filename,
+                'url' => $fileUrl,
                 'mime_type' => $file->getMimeType(),
                 'size' => $file->getSize(),
                 'disk' => 'public',
@@ -42,7 +50,10 @@ class MediaController extends Controller
 
     public function destroy(Media $medium)
     {
-        Storage::disk('public')->delete($medium->path);
+        $filePath = public_path('storage/' . $medium->path);
+        if (File::exists($filePath)) {
+            File::delete($filePath);
+        }
         $medium->delete();
         return back()->with('success', 'File deleted!');
     }
