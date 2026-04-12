@@ -258,9 +258,6 @@
         <a href="{{ route('admin.pages.index') }}" class="nav-item {{ request()->routeIs('admin.pages.*') ? 'active' : '' }}">
             <span class="icon">📄</span> Pages
         </a>
-        <a href="{{ route('admin.media.index') }}" class="nav-item {{ request()->routeIs('admin.media.*') ? 'active' : '' }}">
-            <span class="icon">🖼️</span> Media Library
-        </a>
 
         <div class="nav-section">Community</div>
         <a href="{{ route('admin.comments.index') }}" class="nav-item {{ request()->routeIs('admin.comments.*') ? 'active' : '' }}">

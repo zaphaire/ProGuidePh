@@ -20,12 +20,12 @@ Route::get('/newsletter/unsubscribed', [NewsletterController::class, 'unsubscrib
 Route::get('/newsletter/verify/{token}', [NewsletterController::class, 'verify'])->name('newsletter.verify');
 
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
-Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
-Route::post('/posts/{post}/comments', [PostController::class, 'storeComment'])->name('posts.comments.store');
-Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+Route::get('/posts/{post:slug}', [PostController::class, 'show'])->name('posts.show');
+Route::post('/posts/{post:slug}/comments', [PostController::class, 'storeComment'])->name('posts.comments.store');
+Route::get('/categories/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [PageController::class, 'sendContact'])->name('contact.send');
-Route::get('/pages/{page}', [PageController::class, 'show'])->name('pages.show');
+Route::get('/pages/{page:slug}', [PageController::class, 'show'])->name('pages.show');
 Route::get('/privacy-policy', fn() => view('public.pages.privacy-policy'))->name('privacy-policy');
 Route::get('/terms', fn() => view('public.pages.terms'))->name('terms');
 
@@ -62,11 +62,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Pages
     Route::resource('pages', \App\Http\Controllers\Admin\PageController::class)->except(['show']);
-
-    // Media
-    Route::get('media', [\App\Http\Controllers\Admin\MediaController::class, 'index'])->name('media.index');
-    Route::post('media', [\App\Http\Controllers\Admin\MediaController::class, 'store'])->name('media.store');
-    Route::delete('media/{medium}', [\App\Http\Controllers\Admin\MediaController::class, 'destroy'])->name('media.destroy');
 
     // Comments
     Route::get('comments', [\App\Http\Controllers\Admin\CommentController::class, 'index'])->name('comments.index');
