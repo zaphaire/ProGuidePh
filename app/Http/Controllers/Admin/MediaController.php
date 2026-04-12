@@ -28,23 +28,30 @@ class MediaController extends Controller
         }
 
         foreach ($request->file('files') as $file) {
-            $extension = $file->getClientOriginalExtension() ?: 'jpg';
-            $filename = time() . '_' . uniqid() . '.' . $extension;
-            $file->move($uploadDir, $filename);
-            
-            $fileUrl = url('storage/media/' . $filename);
-            $mimeType = $file->getMimeType() ?: 'image/jpeg';
-            
-            Media::create([
-                'user_id' => auth()->id(),
-                'filename' => $filename,
-                'original_name' => $file->getClientOriginalName(),
-                'path' => 'media/' . $filename,
-                'url' => $fileUrl,
-                'mime_type' => $mimeType,
-                'size' => $file->getSize(),
-                'disk' => 'public',
-            ]);
+            try {
+                $originalName = $file->getClientOriginalName();
+                $pathInfo = pathinfo($originalName);
+                $extension = isset($pathInfo['extension']) ? $pathInfo['extension'] : 'jpg';
+                
+                $filename = time() . '_' . substr(md5(uniqid()), 0, 8) . '.' . $extension;
+                
+                $file->copy($uploadDir . '/' . $filename);
+                
+                $fileUrl = url('storage/media/' . $filename);
+                
+                Media::create([
+                    'user_id' => auth()->id(),
+                    'filename' => $filename,
+                    'original_name' => $originalName,
+                    'path' => 'media/' . $filename,
+                    'url' => $fileUrl,
+                    'mime_type' => 'image/jpeg',
+                    'size' => $file->getSize(),
+                    'disk' => 'public',
+                ]);
+            } catch (\Exception $e) {
+                continue;
+            }
         }
 
         return back()->with('success', 'Files uploaded!');
