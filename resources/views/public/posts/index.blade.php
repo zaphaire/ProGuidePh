@@ -31,8 +31,8 @@
                     @foreach($posts as $post)
                         <a href="{{ route('posts.show', $post->slug) }}" class="post-card-horizontal" style="display:flex;flex-direction:row;overflow:hidden;background:var(--bg-card);border-radius:16px;border:1px solid var(--border-light);box-shadow:var(--shadow-card);transition:transform .3s,box-shadow .3s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='var(--shadow-card-hover)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='var(--shadow-card)'">
                             <div class="post-card-horizontal-img" style="width:240px;flex-shrink:0;position:relative;overflow:hidden">
-                                @if($post->featured_image)
-                                    <img src="{{ asset('storage/'.$post->featured_image) }}" alt="{{ $post->title }}" style="width:100%;height:100%;object-fit:cover;min-height:180px;transition:transform .4s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                @if($post->featured_image_url)
+                                    <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" style="width:100%;height:100%;object-fit:cover;min-height:180px;transition:transform .4s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                                 @else
                                     <div style="width:100%;height:100%;min-height:180px;background:linear-gradient(135deg,var(--primary),var(--primary-light));display:flex;align-items:center;justify-content:center;font-size:3rem">
                                         {{ $post->category?->icon ?? '📖' }}

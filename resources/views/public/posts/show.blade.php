@@ -2,7 +2,7 @@
 
 @section('title', $post->meta_title ?? $post->title)
 @section('meta_description', $post->meta_description ?? $post->excerpt)
-@section('og_image', $post->featured_image ? asset('storage/'.$post->featured_image) : asset('images/og-default.png'))
+@section('og_image', $post->featured_image_url)
 
 @push('styles')
 <script type="application/ld+json">
@@ -24,8 +24,8 @@
       "@type": "ImageObject",
       "url": "{{ asset('images/og-default.png') }}"
     }
-  }{{ $post->featured_image ? ',
-  "image": "' . asset('storage/'.$post->featured_image) . '"' : '' }}
+  },
+  "image": "{{ $post->featured_image_url }}"
 }
 </script>
 @endpush
@@ -54,9 +54,9 @@
         </div>
     </div>
 
-    @if($post->featured_image)
+    @if($post->featured_image_url)
         <div style="max-width:900px;margin:0 auto;padding:0 1.5rem;transform:translateY(-1.5rem)">
-            <img src="{{ asset('storage/'.$post->featured_image) }}" alt="{{ $post->title }}" style="width:100%;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.2);max-height:450px;object-fit:cover">
+            <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" style="width:100%;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.2);max-height:450px;object-fit:cover">
         </div>
     @endif
 

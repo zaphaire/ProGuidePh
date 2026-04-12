@@ -95,9 +95,11 @@ class Post extends Model
             if (str_starts_with($this->featured_image, 'http')) {
                 // If it's a Google Drive link, convert to direct download link
                 if (str_contains($this->featured_image, 'drive.google.com')) {
-                    preg_match('/\/d\/([a-zA-Z0-9_-]+)/', $this->featured_image, $matches);
-                    if (isset($matches[1])) {
-                        return 'https://drive.google.com/uc?export=download&id=' . $matches[1];
+                    if (preg_match('/\/d\/([a-zA-Z0-9_-]+)/', $this->featured_image, $matches)) {
+                        return "https://lh3.googleusercontent.com/d/{$matches[1]}";
+                    }
+                    if (preg_match('/id=([a-zA-Z0-9_-]+)/', $this->featured_image, $matches)) {
+                        return "https://lh3.googleusercontent.com/d/{$matches[1]}";
                     }
                 }
                 return $this->featured_image;

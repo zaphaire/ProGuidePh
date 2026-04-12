@@ -109,8 +109,8 @@
             <div class="posts-grid">
                 @foreach($recentPosts as $post)
                     <a href="{{ route('posts.show', $post->slug) }}" class="card">
-                        @if($post->featured_image)
-                            <img src="{{ asset('storage/'.$post->featured_image) }}" alt="{{ $post->title }}" class="card-img">
+                        @if($post->featured_image_url)
+                            <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" class="card-img">
                         @else
                             <div class="card-img-placeholder">{{ $post->category?->icon ?? '📖' }}</div>
                         @endif
