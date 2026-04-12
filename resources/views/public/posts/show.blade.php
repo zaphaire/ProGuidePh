@@ -33,30 +33,46 @@
 @section('content')
 <article>
     {{-- Hero --}}
-    <div style="background:linear-gradient(135deg,var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);color:#fff;padding:4rem 0 3rem;position:relative;overflow:hidden">
-        <div style="position:absolute;inset:0;background:url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\");"></div>
+    <div style="background:linear-gradient(-45deg, var(--primary-dark), var(--primary), var(--primary-light), var(--primary-dark)); background-size: 400% 400%; animation: gradientFlow 15s ease infinite; color:#fff; padding:5rem 0 4rem; position:relative; overflow:hidden">
+        <div style="position:absolute;inset:0;background:url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\"); opacity: 0.4;"></div>
+        
+        {{-- Floating shapes for depth --}}
+        <div style="position:absolute; right:-5%; top:10%; width:300px; height:300px; background:radial-gradient(circle, rgba(232,160,32,0.1) 0%, transparent 70%); border-radius:50%; animation: floatSlow 8s ease-in-out infinite;"></div>
+        <div style="position:absolute; left:-10%; bottom:0; width:400px; height:400px; background:radial-gradient(circle, rgba(36,56,104,0.2) 0%, transparent 70%); border-radius:50%; animation: floatSlow 12s ease-in-out infinite reverse;"></div>
+
         <div class="container" style="position:relative;z-index:1">
-            @if($post->category)
-                <a href="{{ route('categories.show', $post->category->slug) }}" style="display:inline-flex;align-items:center;gap:.4rem;background:rgba(251,209,22,.15);border:1px solid rgba(251,209,22,.3);color:var(--accent);padding:.35rem .85rem;border-radius:999px;font-size:.8rem;font-weight:600;margin-bottom:1rem">
-                    {{ $post->category->icon }} {{ $post->category->name }}
-                </a>
-            @endif
-            <h1 style="font-family:'Poppins',sans-serif;font-size:2.5rem;line-height:1.2;margin-bottom:1.25rem;max-width:800px;font-weight:800">{{ $post->title }}</h1>
-            <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;font-size:.9rem;color:rgba(255,255,255,.75)">
-                <div style="display:flex;align-items:center;gap:.5rem">
-                    <img src="{{ $post->user->avatar_url }}" alt="{{ $post->user->name }}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)">
-                    <span style="font-weight:600">{{ $post->user->name }}</span>
+            <div class="reveal-scale active">
+                @if($post->category)
+                    <a href="{{ route('categories.show', $post->category->slug) }}" style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(232,160,32,.15);backdrop-filter:blur(10px);border:1px solid rgba(232,160,32,.3);color:var(--accent-light);padding:.4rem 1rem;border-radius:999px;font-size:.8rem;font-weight:700;margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:1px;transition:all 0.3s;" onmouseover="this.style.background='rgba(232,160,32,.25)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(232,160,32,.15)';this.style.transform='translateY(0)'">
+                        {{ $post->category->icon }} {{ $post->category->name }}
+                    </a>
+                @endif
+                <h1 style="font-family:'Playfair Display',serif;font-size:clamp(2rem, 5vw, 3.5rem);line-height:1.1;margin-bottom:1.5rem;max-width:900px;font-weight:700;color:#fff;text-shadow: 0 2px 10px rgba(0,0,0,0.2);">{{ $post->title }}</h1>
+                
+                <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap;font-size:.95rem;color:rgba(255,255,255,0.85);margin-top:2rem;">
+                    <div style="display:flex;align-items:center;gap:.75rem;padding:0.5rem 1rem;background:rgba(255,255,255,0.05);backdrop-filter:blur(5px);border-radius:999px;border:1px solid rgba(255,255,255,0.1);">
+                        <img src="{{ $post->user->avatar_url }}" alt="{{ $post->user->name }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);">
+                        <div style="display:flex;flex-direction:column;line-height:1.2">
+                            <span style="font-weight:700;color:#fff;font-size:0.9rem">{{ $post->user->name }}</span>
+                            <span style="font-size:0.75rem;opacity:0.8">Author</span>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex;gap:1.5rem;align-items:center">
+                        <span style="display:flex;align-items:center;gap:.5rem">📅 {{ $post->published_at?->format('F d, Y') }}</span>
+                        <span style="display:flex;align-items:center;gap:.5rem">👁 {{ number_format($post->views) }} Views</span>
+                        <span style="display:flex;align-items:center;gap:.5rem">💬 {{ $post->approvedComments->count() }} Comments</span>
+                    </div>
                 </div>
-                <span style="display:flex;align-items:center;gap:.35rem">📅 {{ $post->published_at?->format('F d, Y') }}</span>
-                <span style="display:flex;align-items:center;gap:.35rem">👁 {{ number_format($post->views) }} views</span>
-                <span style="display:flex;align-items:center;gap:.35rem">💬 {{ $post->approvedComments->count() }} comments</span>
             </div>
         </div>
     </div>
 
     @if($post->featured_image_url)
-        <div style="max-width:900px;margin:0 auto;padding:0 1.5rem;transform:translateY(-1.5rem)">
-            <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" style="width:100%;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.2);max-height:450px;object-fit:cover">
+        <div class="reveal-scale active" style="max-width:1000px;margin:0 auto;padding:0 1.5rem;transform:translateY(-3rem);position:relative;z-index:2">
+            <div style="background:rgba(255,255,255,0.1);padding:0.75rem;border-radius:24px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);box-shadow:0 30px 60px rgba(0,0,0,0.3);">
+                <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" style="width:100%;border-radius:16px;max-height:550px;object-fit:cover;display:block;transition:all 0.5s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+            </div>
         </div>
     @endif
 
