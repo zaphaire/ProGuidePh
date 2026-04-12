@@ -685,7 +685,7 @@
                                 this.message = '';
                             }, 10000);
                         } else {
-                            this.message = data.message || 'Something went wrong';
+                            this.message = data.message || 'Already subscribed!';
                             this.messageType = 'error';
                         }
                     } catch (e) {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\NewsletterConfirmation;
 use App\Mail\NewsletterUnsubscribed;
+use App\Mail\AlreadySubscribed;
 use App\Models\Subscriber;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -37,9 +38,19 @@ class NewsletterController extends Controller
 
         if ($existingSubscriber) {
             if ($existingSubscriber->is_verified && $existingSubscriber->is_active) {
-                $message = 'You are already subscribed!';
+                $message = 'Already subscribed!';
                 if ($request->expectsJson()) {
+                    try {
+                        Mail::to($email)->send(new AlreadySubscribed($email));
+                    } catch (\Exception $e) {
+                        Log::error('Failed to send already subscribed email: ' . $e->getMessage());
+                    }
                     return response()->json(['message' => $message], 400);
+                }
+                try {
+                    Mail::to($email)->send(new AlreadySubscribed($email));
+                } catch (\Exception $e) {
+                    Log::error('Failed to send already subscribed email: ' . $e->getMessage());
                 }
                 return back()->with('message', $message);
             }
