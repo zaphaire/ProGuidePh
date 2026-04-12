@@ -56,7 +56,6 @@
             </div>
             @endforeach
         </div>
-        <div style="margin-top:1.5rem">{{ $media->links() }}</div>
     @else
         <div style="text-align:center;padding:3rem;color:var(--text-muted)">
             <div style="font-size:3rem;margin-bottom:1rem">🖼️</div>
