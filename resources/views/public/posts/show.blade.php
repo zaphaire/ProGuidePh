@@ -77,7 +77,7 @@
     @endif
 
     {{-- Content --}}
-    <div class="container" style="padding-top:2rem;padding-bottom:3rem">
+    <div class="container" style="padding-top:2rem;padding-bottom:3rem;position:relative;z-index:5">
         <div class="post-layout-grid">
             <div>
                 {{-- Excerpt --}}
@@ -161,7 +161,7 @@
             </div>
 
             {{-- Sidebar --}}
-            <aside style="position:relative;z-index:10">
+            <aside style="position:relative;z-index:50">
                 @if($relatedPosts->isNotEmpty())
                     <div class="card" style="padding:1.4rem;margin-bottom:1.5rem">
                         <h3 style="font-weight:700;color:var(--primary);margin-bottom:1rem;font-size:.95rem">Related Articles</h3>
@@ -183,7 +183,14 @@
                     <div style="font-size:1.5rem;margin-bottom:.75rem">📢</div>
                     <h3 style="font-weight:700;margin-bottom:.5rem">Share this Article</h3>
                     <p style="font-size:.85rem;color:rgba(255,255,255,.7);margin-bottom:1rem">Help others find this content</p>
-                    <a href="#" onclick="event.preventDefault(); window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(window.location.href),'facebook-share','width=600,height=400')" style="display:block;background:rgba(255,255,255,.15);color:#fff;padding:.6rem 1rem;border-radius:8px;text-align:center;font-size:.875rem;font-weight:600;margin-bottom:.5rem;cursor:pointer;text-decoration:none">📘 Share on Facebook</a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->fullUrl()) }}" 
+                       target="_blank" 
+                       style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:#1877F2;color:#fff;padding:.7rem 1rem;border-radius:10px;text-align:center;font-size:.875rem;font-weight:700;transition:all 0.3s;box-shadow:0 4px 12px rgba(24,119,242,0.3);text-decoration:none;position:relative;z-index:60;pointer-events:auto !important;"
+                       onmouseover="this.style.transform='translateY(-2px)';this.style.background='#166fe5'"
+                       onmouseout="this.style.transform='translateY(0)';this.style.background='#1877F2'">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        Share on Facebook
+                    </a>
                 </div>
 
                 {{-- Sidebar Ad Unit | Replace ca-pub-XXXXXXXXXXXXXXXXX and data-ad-slot value with your real IDs --}}
