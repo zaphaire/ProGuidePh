@@ -58,9 +58,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('get-post-data/{post}', [\App\Http\Controllers\Admin\PostController::class, 'editData'])->name('posts.get-data');
 
     // Categories
+    Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->except(['show']);
     Route::get('get-category-data/{category}', [\App\Http\Controllers\Admin\CategoryController::class, 'editData'])->name('categories.get-data');
 
     // Pages
+    Route::resource('pages', \App\Http\Controllers\Admin\PageController::class)->except(['show']);
     Route::get('get-page-data/{page}', [\App\Http\Controllers\Admin\PageController::class, 'editData'])->name('pages.get-data');
 
     // Comments
