@@ -508,12 +508,18 @@
                             <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
                         </a>
                 </div>
-                <div class="footer-newsletter" style="margin-top:1.5rem">
+                <div class="footer-newsletter" style="margin-top:1.5rem" x-data="footerNewsletter()" @submit.prevent="submit">
                     <p style="color:rgba(255,255,255,.7);font-size:.875rem;margin-bottom:.75rem">Subscribe to our newsletter:</p>
-                    <form action="{{ route('newsletter.subscribe') }}" method="POST" style="display:flex;gap:.5rem">
+                    
+                    <div x-show="message" x-text="message" :style="messageType === 'success' ? 'color:#4ade80' : 'color:#f87171'" style="font-size:.875rem;margin-bottom:.5rem"></div>
+                    
+                    <form x-show="!message || messageType === 'error'" style="display:flex;gap:.5rem">
                         @csrf
-                        <input type="email" name="email" placeholder="Your email" required style="flex:1;padding:.5rem .875rem;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-size:.875rem;outline:none" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(255,255,255,.2)'">
-                        <button type="submit" style="padding:.5rem 1rem;border-radius:8px;background:var(--primary);color:#fff;font-size:.875rem;font-weight:600;border:none;cursor:pointer;transition:background .2s" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">Subscribe</button>
+                        <input type="email" x-model="email" placeholder="Your email" required style="flex:1;padding:.5rem .875rem;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-size:.875rem;outline:none" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='rgba(255,255,255,.2)'">
+                        <button type="submit" :disabled="loading" style="padding:.5rem 1rem;border-radius:8px;background:var(--primary);color:#fff;font-size:.875rem;font-weight:600;border:none;cursor:pointer;transition:background .2s" onmouseover="this.style.background='var(--primary-dark)'" onmouseout="this.style.background='var(--primary)'">
+                            <span x-show="!loading">Subscribe</span>
+                            <span x-show="loading">...</span>
+                        </button>
                     </form>
                 </div>
             </div>
@@ -648,6 +654,42 @@
                 document.getElementById('cookieConsent').style.display = 'block';
             }
         })();
+        
+        function footerNewsletter() {
+            return {
+                email: '',
+                loading: false,
+                message: '',
+                messageType: '',
+                async submit() {
+                    this.loading = true;
+                    this.message = '';
+                    try {
+                        const response = await fetch('{{ route("newsletter.subscribe") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ email: this.email })
+                        });
+                        const data = await response.json();
+                        if (response.ok) {
+                            this.message = data.message || 'Thank you for subscribing!';
+                            this.messageType = 'success';
+                            this.email = '';
+                        } else {
+                            this.message = data.message || 'Something went wrong';
+                            this.messageType = 'error';
+                        }
+                    } catch (e) {
+                        this.message = 'Network error. Please try again.';
+                        this.messageType = 'error';
+                    }
+                    this.loading = false;
+                }
+            }
+        }
     </script>
 </body>
 </html>
