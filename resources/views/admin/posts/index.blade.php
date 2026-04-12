@@ -9,7 +9,98 @@
         <h1>Posts</h1>
         <p>Manage all articles and content</p>
     </div>
-    <a href="{{ route('admin.posts.create') }}" class="btn btn-primary-admin">+ New Post</a>
+    <button onclick="openModal('createPostModal')" class="btn btn-primary-admin">+ New Post</button>
+</div>
+
+{{-- Create Post Modal --}}
+<div id="createPostModal" class="modal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.5);align-items:center;justify-content:center">
+    <div class="modal-content" style="background:#fff;border-radius:12px;width:95%;max-width:900px;max-height:90vh;overflow-y:auto;margin:1rem">
+        <div style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+            <h2 style="font-size:1.25rem;font-weight:700;color:var(--text-header)">Create New Post</h2>
+            <button onclick="closeModal('createPostModal')" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)">&times;</button>
+        </div>
+        
+        <form method="POST" action="{{ route('admin.posts.store') }}" enctype="multipart/form-data" style="padding:1.5rem">
+            @csrf
+            <div class="grid-2" style="align-items:start">
+                <div>
+                    <div class="admin-card">
+                        <h3 style="font-size:.95rem;font-weight:700;color:var(--text-header);margin-bottom:1.25rem">Post Content</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Title *</label>
+                            <input type="text" name="title" value="{{ old('title') }}" class="form-control" required placeholder="Article title...">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Excerpt</label>
+                            <textarea name="excerpt" class="form-control" rows="3" placeholder="Short summary...">{{ old('excerpt') }}</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Body *</label>
+                            <textarea name="body" id="tinymce-editor-modal" class="form-control" rows="12">{{ old('body') }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <h3 style="font-size:.95rem;font-weight:700;color:var(--text-header);margin-bottom:1.25rem">SEO Settings</h3>
+                        <div class="form-group">
+                            <label class="form-label">Meta Title</label>
+                            <input type="text" name="meta_title" value="{{ old('meta_title') }}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Meta Description</label>
+                            <textarea name="meta_description" class="form-control" rows="2">{{ old('meta_description') }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="admin-card">
+                        <h3 style="font-size:.95rem;font-weight:700;color:var(--text-header);margin-bottom:1.25rem">Post Settings</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Status *</label>
+                            <select name="status" class="form-control" required>
+                                <option value="draft">Draft</option>
+                                <option value="published" {{ old('status') === 'published' ? 'selected' : '' }}>Published</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select name="category_id" class="form-control">
+                                <option value="">— None —</option>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat->id }}">{{ $cat->icon }} {{ $cat->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Featured Image</label>
+                            <input type="file" name="featured_image" class="form-control" accept="image/*" id="modalImageInput">
+                            <div id="modalImagePreview" style="margin-top:.75rem;display:none">
+                                <img id="modalPreviewImg" src="" alt="Preview" style="width:100%;border-radius:8px;max-height:150px;object-fit:cover">
+                            </div>
+                        </div>
+
+                        <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem;background:rgba(245,158,11,.05);border-radius:8px">
+                            <input type="checkbox" name="is_featured" id="is_featured" value="1" style="width:16px;height:16px;accent-color:#f59e0b">
+                            <label for="is_featured" style="color:#f59e0b;font-weight:600;font-size:.85rem">Feature this post</label>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;gap:1rem;margin-top:1rem">
+                        <button type="submit" class="btn btn-primary-admin" style="flex:1">Publish Post</button>
+                        <button type="button" onclick="closeModal('createPostModal')" class="btn btn-ghost" style="flex:1">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 {{-- Filters --}}
@@ -74,10 +165,10 @@
                         <div style="display:flex;gap:.4rem">
                             <a href="{{ route('posts.show', $post->slug) }}" target="_blank" class="btn btn-ghost btn-sm">View</a>
                             <a href="{{ route('admin.posts.edit', $post) }}" class="btn btn-warning btn-sm">Edit</a>
-                                <form id="delete-post-{{ $post->id }}" action="{{ route('admin.posts.destroy', $post) }}" method="POST" style="display: none;">
-                                    @csrf @method('DELETE')
-                                </form>
-                                <button type="button" onclick="openDeleteModal('delete-post-{{ $post->id }}', 'Are you sure you want to delete this post? This will permanently remove it from the database.')" class="btn btn-danger btn-sm">Delete</button>
+                            <form id="delete-post-{{ $post->id }}" action="{{ route('admin.posts.destroy', $post) }}" method="POST" style="display: none;">
+                                @csrf @method('DELETE')
+                            </form>
+                            <button type="button" onclick="openDeleteModal('delete-post-{{ $post->id }}', 'Are you sure you want to delete this post? This will permanently remove it from the database.')" class="btn btn-danger btn-sm">Delete</button>
                         </div>
                     </td>
                 </tr>
@@ -91,3 +182,52 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+function openModal(id) {
+    document.getElementById(id).style.display = 'flex';
+    if (id === 'createPostModal' && !window.tinymceModalInitialized) {
+        tinymce.init({
+            selector: '#tinymce-editor-modal',
+            skin: 'oxide-dark',
+            content_css: 'dark',
+            height: 300,
+            menubar: true,
+            plugins: ['advlist','autolink','lists','link','image','charmap','preview','anchor','searchreplace','visualblocks','code','fullscreen','insertdatetime','media','table','help','wordcount'],
+            toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image link | help',
+            content_style: 'body { font-family: Inter, sans-serif; font-size: 14px; }',
+            promotion: false,
+            setup: function(editor) {
+                editor.on('init', function() {
+                    window.tinymceModalInitialized = true;
+                });
+            }
+        });
+    }
+}
+
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+document.getElementById('modalImageInput')?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            document.getElementById('modalPreviewImg').src = ev.target.result;
+            document.getElementById('modalImagePreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+    }
+}
+</script>
+@endpush
