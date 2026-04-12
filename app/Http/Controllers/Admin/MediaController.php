@@ -28,8 +28,6 @@ class MediaController extends Controller
             // Store directly in the media disk root (which is public/media)
             $path = $file->storeAs('', $filename, 'public');
             
-            $fullPath = public_path('media/' . $path);
-            
             Media::create([
                 'user_id' => auth()->id(),
                 'filename' => $filename,
@@ -37,7 +35,7 @@ class MediaController extends Controller
                 'path' => $path,
                 'url' => Storage::disk('public')->url($path),
                 'mime_type' => $file->getMimeType() ?: 'image/jpeg',
-                'size' => filesize($fullPath),
+                'size' => Storage::disk('public')->size($path),
                 'disk' => 'public',
             ]);
         }
