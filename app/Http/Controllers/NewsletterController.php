@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class NewsletterController extends Controller
 {
@@ -68,7 +69,14 @@ class NewsletterController extends Controller
 
         $subscriber->verify();
 
-        Mail::to($subscriber)->send(new NewsletterConfirmation($subscriber));
+        Log::info('Attempting to send newsletter confirmation email to: ' . $subscriber->email);
+        
+        try {
+            Mail::to($subscriber)->send(new NewsletterConfirmation($subscriber));
+            Log::info('Newsletter confirmation email sent successfully to: ' . $subscriber->email);
+        } catch (\Exception $e) {
+            Log::error('Failed to send newsletter confirmation email: ' . $e->getMessage());
+        }
 
         $message = 'Thank you for subscribing! Check your email for confirmation.';
         
