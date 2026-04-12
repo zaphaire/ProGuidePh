@@ -44,6 +44,20 @@ class PageController extends Controller
         return view('admin.pages.edit', compact('page'));
     }
 
+    public function editData(Page $page)
+    {
+        return response()->json([
+            'id' => $page->id,
+            'title' => $page->title,
+            'slug' => $page->slug,
+            'body' => $page->body,
+            'is_published' => $page->is_published,
+            'meta_title' => $page->meta_title,
+            'meta_description' => $page->meta_description,
+            'order' => $page->order,
+        ]);
+    }
+
     public function update(Request $request, Page $page)
     {
         $validated = $request->validate([

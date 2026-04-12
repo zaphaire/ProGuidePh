@@ -63,6 +63,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Pages
     Route::resource('pages', \App\Http\Controllers\Admin\PageController::class)->except(['show']);
+    Route::get('get-page-data/{page:id}', [\App\Http\Controllers\Admin\PageController::class, 'editData'])->name('pages.get-data');
 
     // Comments
     Route::get('comments', [\App\Http\Controllers\Admin\CommentController::class, 'index'])->name('comments.index');
