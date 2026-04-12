@@ -236,7 +236,7 @@
             <button onclick="closeModal('editPostModal')" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted)">&times;</button>
         </div>
         
-        <form method="POST" id="editPostForm" enctype="multipart/form-data" style="padding:1.5rem">
+        <form method="POST" id="editPostForm" action="{{ route('admin.posts.index') }}" enctype="multipart/form-data" style="padding:1.5rem">
             @csrf
             @method('PUT')
             <input type="hidden" id="editPostId" value="">
