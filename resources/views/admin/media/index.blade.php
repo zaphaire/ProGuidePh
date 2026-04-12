@@ -35,8 +35,8 @@
             @foreach($media as $file)
             <div style="background:#0f172a;border-radius:10px;overflow:hidden;border:1px solid var(--border-subtle)">
                 @if(str_starts_with($file->mime_type, 'image/'))
-                    <div style="width:100%;height:120px;background:#1e293b;display:flex;align-items:center;justify-content:center">
-                        <img src="{{ asset('storage/'.$file->path) }}" alt="{{ $file->original_name }}" style="max-width:100%;max-height:100%;object-fit:contain" onclick="window.open('{{ asset('storage/'.$file->path) }}', '_blank')">
+                    <div style="width:100%;height:120px;background:#1e293b;display:flex;align-items:center;justify-content:center;">
+                        <img src="{{ $file->url }}" alt="{{ $file->original_name }}" style="max-width:100%;max-height:100%;object-fit:contain" onerror="this.onerror=null;this.src='{{$file->url}}'">
                     </div>
                 @else
                     <div style="width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:#1e293b">📄</div>
