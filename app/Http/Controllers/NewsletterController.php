@@ -123,10 +123,15 @@ class NewsletterController extends Controller
             }
             
             $subscriber->delete();
-            return redirect('/')->with('message', 'You have been unsubscribed successfully.');
+            return redirect()->route('newsletter.unsubscribed');
         }
 
         return redirect('/')->with('message', 'Email not found in our subscribers list.');
+    }
+
+    public function unsubscribed(): View
+    {
+        return view('emails.unsubscribed');
     }
 
     public function verify(string $token): RedirectResponse
