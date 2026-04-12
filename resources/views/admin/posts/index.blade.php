@@ -335,12 +335,15 @@ document.getElementById('editImageInput')?.addEventListener('change', function(e
 let editTinymceInitialized = false;
 
 function openEditModal(postId) {
+    console.log('Opening edit modal for post:', postId);
     fetch('/admin/posts-data/' + postId)
         .then(res => {
-            if (!res.ok) throw new Error('Network error');
+            console.log('Response status:', res.status);
+            if (!res.ok) throw new Error('Network error: ' + res.status);
             return res.json();
         })
         .then(post => {
+            console.log('Post data:', post);
             document.getElementById('editPostId').value = post.id;
             document.getElementById('editPostForm').action = '/admin/posts/' + post.id;
             document.getElementById('editTitle').value = post.title || '';
