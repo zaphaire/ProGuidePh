@@ -54,8 +54,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('system/clear-cache', [\App\Http\Controllers\Admin\SystemController::class, 'clearCache'])->name('system.clear-cache');
 
     // Posts
-    Route::resource('posts', \App\Http\Controllers\Admin\PostController::class);
     Route::get('posts/{post}/edit-data', [\App\Http\Controllers\Admin\PostController::class, 'editData'])->name('posts.edit-data');
+    Route::resource('posts', \App\Http\Controllers\Admin\PostController::class);
 
     // Categories
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->except(['show']);

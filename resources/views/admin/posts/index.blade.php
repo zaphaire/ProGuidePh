@@ -336,7 +336,10 @@ let editTinymceInitialized = false;
 
 function openEditModal(postId) {
     fetch('/admin/posts/' + postId + '/edit-data')
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error('Network error');
+            return res.json();
+        })
         .then(post => {
             document.getElementById('editPostId').value = post.id;
             document.getElementById('editPostForm').action = '/admin/posts/' + post.id;
@@ -376,8 +379,14 @@ function openEditModal(postId) {
                     }
                 });
             } else {
-                tinymce.get('tinymce-editor-edit').setContent(post.body || '');
+                setTimeout(() => {
+                    tinymce.get('tinymce-editor-edit').setContent(post.body || '');
+                }, 100);
             }
+        })
+        .catch(err => {
+            console.error('Error fetching post:', err);
+            alert('Failed to load post data. Please try again.');
         });
 }
 
