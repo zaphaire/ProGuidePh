@@ -183,22 +183,13 @@
                     <div style="font-size:1.5rem;margin-bottom:.75rem">📢</div>
                     <h3 style="font-weight:700;margin-bottom:.5rem">Share this Article</h3>
                     <p style="font-size:.85rem;color:rgba(255,255,255,.7);margin-bottom:1rem">Help others find this content</p>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->fullUrl()) }}" 
-                       target="_blank" 
-                       style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:#1877F2;color:#fff;padding:.7rem 1rem;border-radius:10px;text-align:center;font-size:.875rem;font-weight:700;transition:all 0.3s;box-shadow:0 4px 12px rgba(24,119,242,0.3);text-decoration:none;position:relative;z-index:60;pointer-events:auto !important;"
-                       onmouseover="this.style.transform='translateY(-2px)';this.style.background='#166fe5'"
-                       onmouseout="this.style.transform='translateY(0)';this.style.background='#1877F2'">
-                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                        Share on Facebook
-                    </a>
-
-                    {{-- TikTok Share Button --}}
-                    <button onclick="shareToTikTok(this)" id="tiktok-share-btn" 
-                       style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:#000;color:#fff;padding:.7rem 1rem;border-radius:10px;text-align:center;font-size:.875rem;font-weight:700;transition:all 0.3s;box-shadow:0 4px 12px rgba(0,0,0,0.2);border:none;width:100%;cursor:pointer;margin-top:.75rem;position:relative;z-index:60;pointer-events:auto !important;"
-                       onmouseover="this.style.transform='translateY(-2px)';this.style.background='#222'"
-                       onmouseout="this.style.transform='translateY(0)';this.style.background='#000'">
-                        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.037 2.61-.019 3.91-.006.061 1.285.738 2.494 1.717 3.32.972.805 2.216 1.285 3.466 1.344v3.94c-1.277-.012-2.526-.308-3.67-.872-.513-.254-.985-.59-1.404-.99V13.08c0 2.138-.6 4.134-2.39 5.215-1.52.92-3.41 1.012-5.074.405-1.592-.586-2.753-1.957-3.14-3.536-.406-1.656.024-3.534 1.144-4.75 1.196-1.298 3.033-1.82 4.755-1.393.284.072.556.175.812.304V5.103c-1.425-.343-2.924-.31-4.32.092C3.162 5.922 1.43 8.208 1.01 10.855c-.16 1.01-.1 2.053.18 3.033.542 1.854 1.93 3.474 3.766 4.033 2.127.646 4.553.145 6.138-1.4.92-.898 1.47-2.146 1.487-3.44.02-3.374.009-6.748.014-10.122.003-.982 0-1.963.003-2.944-.01-1.025.102-2.05-.073-3.057z"/></svg>
-                        Share on TikTok
+                    {{-- Universal Share Button --}}
+                    <button onclick="shareToTikTok(this)" id="universal-share-btn" 
+                       style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:linear-gradient(135deg, var(--primary), var(--primary-dark));color:#fff;padding:.8rem 1rem;border-radius:12px;text-align:center;font-size:.9rem;font-weight:700;transition:all 0.3s;box-shadow:0 8px 20px rgba(0,0,0,0.15);border:none;width:100%;cursor:pointer;position:relative;z-index:60;pointer-events:auto !important;"
+                       onmouseover="this.style.transform='translateY(-2px) scale(1.02)';this.style.boxShadow='0 12px 25px rgba(0,0,0,0.2)'"
+                       onmouseout="this.style.transform='translateY(0) scale(1)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)'">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                        Share it
                     </button>
                 </div>
 
@@ -246,7 +237,7 @@
 @push('scripts')
 <script>
 /**
- * TikTok Sharing Logic
+ * Universal Sharing Logic
  * Uses Native Share API (Mobile) or Clipboard Fallback (Desktop)
  */
 function shareToTikTok(btn) {
@@ -281,15 +272,15 @@ function copyFallback(text, btn) {
         document.body.removeChild(textArea);
         
         if (successful) {
-            btn.innerHTML = '✅ Link Copied! Paste on TikTok';
+            btn.innerHTML = '<svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Link Copied!';
             btn.style.background = '#10b981';
             setTimeout(() => {
                 btn.innerHTML = originalContent;
-                btn.style.background = '#000';
+                btn.style.background = 'linear-gradient(135deg, var(--primary), var(--primary-dark))';
             }, 3000);
         }
     } catch (err) {
-        window.prompt("Copy this link to share on TikTok:", text);
+        window.prompt("Copy this link to share:", text);
     }
 }
 </script>
