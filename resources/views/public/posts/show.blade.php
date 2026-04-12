@@ -191,6 +191,15 @@
                         <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                         Share on Facebook
                     </a>
+
+                    {{-- TikTok Share Button --}}
+                    <button onclick="shareToTikTok(this)" id="tiktok-share-btn" 
+                       style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:#000;color:#fff;padding:.7rem 1rem;border-radius:10px;text-align:center;font-size:.875rem;font-weight:700;transition:all 0.3s;box-shadow:0 4px 12px rgba(0,0,0,0.2);border:none;width:100%;cursor:pointer;margin-top:.75rem;position:relative;z-index:60;pointer-events:auto !important;"
+                       onmouseover="this.style.transform='translateY(-2px)';this.style.background='#222'"
+                       onmouseout="this.style.transform='translateY(0)';this.style.background='#000'">
+                        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.037 2.61-.019 3.91-.006.061 1.285.738 2.494 1.717 3.32.972.805 2.216 1.285 3.466 1.344v3.94c-1.277-.012-2.526-.308-3.67-.872-.513-.254-.985-.59-1.404-.99V13.08c0 2.138-.6 4.134-2.39 5.215-1.52.92-3.41 1.012-5.074.405-1.592-.586-2.753-1.957-3.14-3.536-.406-1.656.024-3.534 1.144-4.75 1.196-1.298 3.033-1.82 4.755-1.393.284.072.556.175.812.304V5.103c-1.425-.343-2.924-.31-4.32.092C3.162 5.922 1.43 8.208 1.01 10.855c-.16 1.01-.1 2.053.18 3.033.542 1.854 1.93 3.474 3.766 4.033 2.127.646 4.553.145 6.138-1.4.92-.898 1.47-2.146 1.487-3.44.02-3.374.009-6.748.014-10.122.003-.982 0-1.963.003-2.944-.01-1.025.102-2.05-.073-3.057z"/></svg>
+                        Share on TikTok
+                    </button>
                 </div>
 
                 {{-- Sidebar Ad Unit | Replace ca-pub-XXXXXXXXXXXXXXXXX and data-ad-slot value with your real IDs --}}
@@ -233,3 +242,55 @@
 </style>
 
 @endsection
+
+@push('scripts')
+<script>
+/**
+ * TikTok Sharing Logic
+ * Uses Native Share API (Mobile) or Clipboard Fallback (Desktop)
+ */
+function shareToTikTok(btn) {
+    const url = window.location.href;
+    const title = document.title;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: title,
+            url: url
+        }).catch(err => {
+            console.error('Share failed:', err);
+            copyFallback(url, btn);
+        });
+    } else {
+        copyFallback(url, btn);
+    }
+}
+
+function copyFallback(text, btn) {
+    const originalContent = btn.innerHTML;
+    try {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (successful) {
+            btn.innerHTML = '✅ Link Copied! Paste on TikTok';
+            btn.style.background = '#10b981';
+            setTimeout(() => {
+                btn.innerHTML = originalContent;
+                btn.style.background = '#000';
+            }, 3000);
+        }
+    } catch (err) {
+        window.prompt("Copy this link to share on TikTok:", text);
+    }
+}
+</script>
+@endpush
