@@ -29,7 +29,7 @@
 
 {{-- Media Grid --}}
 <div class="admin-card">
-    <h3 style="font-size:1rem;font-weight:700;color:var(--text-header);margin-bottom:1.25rem">All Files ({{ $totalMedia }})</h3>
+    <h3 style="font-size:1rem;font-weight:700;color:var(--text-header);margin-bottom:1.25rem">All Files ({{ $media->count() }})</h3>
     @if($media->count() > 0)
         <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));gap:1rem">
             @foreach($media as $file)
