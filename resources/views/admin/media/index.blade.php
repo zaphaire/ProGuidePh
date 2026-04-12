@@ -24,32 +24,55 @@
     <h3 style="font-size:1rem;font-weight:700;color:var(--text-header);margin-bottom:1.25rem">All Files ({{ $media->count() }})</h3>
     
     @if($media->count() > 0)
-    <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));gap:1rem">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:1.5rem">
         @foreach($media as $file)
-        <div style="background:#0f172a;border-radius:10px;overflow:hidden;border:1px solid var(--border-subtle);padding:1rem;text-align:center">
-            <div style="font-size:3rem;margin-bottom:.5rem">
+        <div style="background:#0f172a;border-radius:12px;overflow:hidden;border:1px solid var(--border-subtle);display:flex;flex-direction:column;transition:transform 0.2s ease, box-shadow 0.2s ease;" class="media-card">
+            <div style="height:150px;background:#1e293b;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-bottom:1px solid var(--border-subtle)">
                 @if(str_starts_with($file->mime_type, 'image/'))
-                    🖼️
+                    <img src="{{ $file->url }}" alt="{{ $file->original_name }}" style="width:100%;height:100%;object-fit:cover;">
                 @elseif($file->mime_type === 'application/pdf')
-                    📕
+                    <div style="font-size:3.5rem">📕</div>
                 @else
-                    📄
+                    <div style="font-size:3.5rem">📄</div>
                 @endif
+                
+                <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;" class="media-overlay">
+                     <button onclick="navigator.clipboard.writeText('{{ url($file->url) }}'); alert('URL copied!')" class="btn btn-primary-admin btn-sm" style="padding:0.4rem 0.8rem">Copy URL</button>
+                </div>
             </div>
-            <div style="font-size:.75rem;color:var(--text-main);word-break:break-all">{{ $file->original_name }}</div>
-            <div style="font-size:.7rem;color:var(--text-muted);margin:.3rem 0">{{ round($file->size / 1024, 1) }} KB</div>
-            <div style="font-size:.7rem;color:#64748b;margin-bottom:.5rem">{{ $file->mime_type }}</div>
-            
-            <div style="display:flex;gap:.5rem;justify-content:center">
-                <button onclick="navigator.clipboard.writeText('{{ $file->url }}')" class="btn btn-ghost btn-sm">Copy URL</button>
-                <form action="{{ route('admin.media.destroy', $file) }}" method="POST">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete?')">Delete</button>
-                </form>
+
+            <div style="padding:1rem;flex-grow:1;display:flex;flex-direction:column;justify-content:space-between">
+                <div style="margin-bottom:0.75rem">
+                    <div style="font-size:.85rem;font-weight:600;color:var(--text-header);word-break:break-all;margin-bottom:0.25rem" title="{{ $file->original_name }}">
+                        {{ Str::limit($file->original_name, 25) }}
+                    </div>
+                    <div style="font-size:.75rem;color:var(--text-muted);display:flex;justify-content:space-between">
+                        <span>{{ round($file->size / 1024, 1) }} KB</span>
+                        <span>{{ explode('/', $file->mime_type)[1] ?? $file->mime_type }}</span>
+                    </div>
+                </div>
+                
+                <div style="display:flex;gap:.5rem">
+                    <form action="{{ route('admin.media.destroy', $file) }}" method="POST" style="width:100%">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn btn-danger btn-sm" style="width:100%;background:rgba(239, 68, 68, 0.1);color:#ef4444;border:1px solid rgba(239, 68, 68, 0.2)" onclick="return confirm('Protect against accidental deletion?')">Delete</button>
+                    </form>
+                </div>
             </div>
         </div>
         @endforeach
     </div>
+
+    <style>
+        .media-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-primary) !important;
+        }
+        .media-card:hover .media-overlay {
+            opacity: 1 !important;
+        }
+    </style>
     @else
     <p style="color:var(--text-muted);text-align:center;padding:2rem">No files uploaded.</p>
     @endif

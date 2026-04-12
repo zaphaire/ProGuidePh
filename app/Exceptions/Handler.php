@@ -40,15 +40,20 @@ class Handler extends ExceptionHandler
             $userEmail = request()->user()->email ?? null;
 
             if (app()->environment('production')) {
-                $adminEmails = User::where('is_admin', true)->pluck('email')->toArray();
+                $adminEmails = User::where('is_admin', true)
+                    ->whereNotNull('email')
+                    ->pluck('email')
+                    ->toArray();
                 
                 if (!empty($adminEmails)) {
-                    Mail::to($adminEmails)->send(new SystemErrorMail(
-                        $message,
-                        $location,
-                        $severity,
-                        $userEmail
-                    ));
+                    foreach ($adminEmails as $adminEmail) {
+                        Mail::to($adminEmail)->send(new SystemErrorMail(
+                            $message,
+                            $location,
+                            $severity,
+                            $userEmail
+                        ));
+                    }
                 }
             }
         } catch (\Exception $ex) {
