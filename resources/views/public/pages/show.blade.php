@@ -251,11 +251,21 @@
     .about-page-content > ol { 
         margin-bottom: 2rem !important;
     }
-    .about-page-content .about-hero { padding: 1.5rem 1rem; }
+    .about-page-content .about-hero { 
+        padding: 1.5rem 1rem; 
+        margin-top: 2rem;
+        display: flex;
+        flex-direction: column;
+    }
+    .about-page-content .about-hero-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
     .about-page-content .about-hero h1 { font-size: 1.35rem; }
     .about-page-content .about-hero p { font-size: 0.95rem; }
     .about-page-content .values-grid { grid-template-columns: 1fr; gap: 1rem; }
-    .about-page-content .about-section { padding: 1.25rem; }
+    .about-page-content .about-section { padding: 1.25rem; margin-bottom: 1.5rem; }
     .about-page-content .about-mission { padding: 1.5rem; }
     .about-page-content .about-mission p { font-size: 1rem; }
     .about-page-content .why-item { padding: 1rem; gap: 0.75rem; }
@@ -267,7 +277,10 @@
     .about-page-content > article { 
         margin-bottom: 1.5rem !important;
     }
-    .about-page-content .about-hero { padding: 1.25rem 0.75rem; }
+    .about-page-content .about-hero { 
+        padding: 1.25rem 0.75rem; 
+        margin-top: 1.5rem;
+    }
     .about-page-content .about-hero h1 { font-size: 1.2rem; }
 }
 </style>
