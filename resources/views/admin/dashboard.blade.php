@@ -412,6 +412,13 @@ function closeModal(id) {
     document.getElementById(id).style.display = 'none';
 }
 
+document.getElementById('editPostForm')?.addEventListener('submit', function(e) {
+    const postId = document.getElementById('editPostId').value;
+    if (postId) {
+        this.action = '/admin/posts/' + postId;
+    }
+});
+
 document.getElementById('dashboardImageUrl')?.addEventListener('input', function(e) {
     const url = e.target.value.trim();
     if (url) {

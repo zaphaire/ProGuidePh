@@ -310,6 +310,13 @@ function closeModal(id) {
     document.getElementById(id).style.display = 'none';
 }
 
+document.getElementById('editPostForm')?.addEventListener('submit', function(e) {
+    const postId = document.getElementById('editPostId').value;
+    if (postId) {
+        this.action = '/admin/posts/' + postId;
+    }
+});
+
 function fixGoogleDriveUrl(url) {
     if (url.includes('drive.google.com')) {
         let fileId = '';
