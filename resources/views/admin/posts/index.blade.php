@@ -335,7 +335,7 @@ document.getElementById('editImageInput')?.addEventListener('change', function(e
 let editTinymceInitialized = false;
 
 function openEditModal(postId) {
-    fetch('/admin/posts/' + postId + '/edit-data')
+    fetch('/admin/posts-data/' + postId)
         .then(res => {
             if (!res.ok) throw new Error('Network error');
             return res.json();
