@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MediaController extends Controller
 {
@@ -16,12 +17,18 @@ class MediaController extends Controller
 
     public function store(Request $request)
     {
-        $uploadDir = base_path('../public_html/uploads');
+        $uploadDir = base_path('../public_html/public/uploads');
         
         if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
+            if (!mkdir($uploadDir, 0755, true)) {
+                return back()->with('error', 'Cannot create upload directory. Please check folder permissions.');
+            }
         }
 
+        if (!is_writable($uploadDir)) {
+            return back()->with('error', 'Upload directory is not writable. Please check folder permissions.');
+        }
+        
         $count = 0;
         $files = $request->file('files');
         
@@ -39,13 +46,13 @@ class MediaController extends Controller
             
             $fullPath = $uploadDir . '/' . $newName;
             
-            if (copy($file->getPathname(), $fullPath)) {
+                if (copy($file->getPathname(), $fullPath)) {
                 Media::create([
-                    'user_id' => auth()->id(),
+                    'user_id' => Auth::id(),
                     'filename' => $newName,
                     'original_name' => $name,
-                    'path' => 'uploads/' . $newName,
-                    'url' => '/uploads/' . $newName,
+                    'path' => 'public/uploads/' . $newName,
+                    'url' => '/public/uploads/' . $newName,
                     'mime_type' => 'image/jpeg',
                     'size' => filesize($fullPath),
                     'disk' => 'public',
@@ -59,7 +66,7 @@ class MediaController extends Controller
 
     public function destroy(Media $medium)
     {
-        $path = base_path('../public_html/' . $medium->path);
+        $path = base_path('../public_html/public/' . $medium->path);
         if (file_exists($path)) {
             unlink($path);
         }
