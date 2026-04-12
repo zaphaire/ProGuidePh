@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class MediaController extends Controller
 {
@@ -17,57 +16,54 @@ class MediaController extends Controller
 
     public function store(Request $request)
     {
-        if (!$request->hasFile('files')) {
-            return back()->with('error', 'No file selected');
+        $uploadDir = base_path('../public_html/uploads');
+        
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
         }
 
-        $uploaded = 0;
-        
+        $count = 0;
         $files = $request->file('files');
         
         if (!is_array($files)) {
             $files = [$files];
         }
-
+        
         foreach ($files as $file) {
-            if (!$file || !$file->isValid()) {
-                continue;
+            if (!$file) continue;
+            
+            $name = $file->getClientOriginalName();
+            $ext = strtolower($file->getClientOriginalExtension() ?: 'jpg');
+            $base = pathinfo($name, PATHINFO_FILENAME);
+            $newName = time() . '_' . substr(md5($base), 0, 6) . '.' . $ext;
+            
+            $fullPath = $uploadDir . '/' . $newName;
+            
+            if (copy($file->getPathname(), $fullPath)) {
+                Media::create([
+                    'user_id' => auth()->id(),
+                    'filename' => $newName,
+                    'original_name' => $name,
+                    'path' => 'uploads/' . $newName,
+                    'url' => '/uploads/' . $newName,
+                    'mime_type' => 'image/jpeg',
+                    'size' => filesize($fullPath),
+                    'disk' => 'public',
+                ]);
+                $count++;
             }
-            
-            $originalName = $file->getClientOriginalName();
-            $extension = strtolower($file->getClientOriginalExtension() ?: 'jpg');
-            $baseName = pathinfo($originalName, PATHINFO_FILENAME);
-            $newFilename = time() . '_' . substr(md5($baseName), 0, 6) . '.' . $extension;
-            
-            $path = $file->storeAs('uploads', $newFilename, 'public');
-            
-            $fullPath = public_path($path);
-            $fileSize = file_exists($fullPath) ? filesize($fullPath) : $file->getSize();
-            
-            Media::create([
-                'user_id' => auth()->id(),
-                'filename' => $newFilename,
-                'original_name' => $originalName,
-                'path' => $path,
-                'url' => '/' . $path,
-                'mime_type' => $file->getMimeType() ?: 'image/jpeg',
-                'size' => $fileSize,
-                'disk' => 'public',
-            ]);
-            
-            $uploaded++;
         }
 
-        return back()->with('success', $uploaded . ' file(s) uploaded!');
+        return back()->with('success', $count . ' file(s) uploaded!');
     }
 
     public function destroy(Media $medium)
     {
-        $path = public_path($medium->path);
+        $path = base_path('../public_html/' . $medium->path);
         if (file_exists($path)) {
             unlink($path);
         }
         $medium->delete();
-        return back()->with('success', 'File deleted!');
+        return back()->with('success', 'File deleted');
     }
 }
