@@ -28,7 +28,7 @@ class TwoFactorAuthController extends Controller
         return view('auth.2fa-select');
     }
 
-    public function selectMethod(Request $request): RedirectResponse
+    public function selectMethod(Request $request): RedirectResponse|View
     {
         if (! session()->has('pending_user_id')) {
             return redirect()->route('login');
