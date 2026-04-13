@@ -53,12 +53,15 @@
         </style>
     </head>
     <body>
-        @php $siteLogo = \App\Models\Setting::get('site_logo'); @endphp
+        @php 
+$siteLogo = \App\Models\Setting::get('site_logo');
+$logoSrc = $siteLogo && (str_starts_with($siteLogo, 'http') || str_starts_with($siteLogo, '//')) ? $siteLogo : ($siteLogo ? asset('storage/' . $siteLogo) : null);
+@endphp
         <div class="login-container">
             <div class="login-left">
                 <div class="login-left-content">
-                    @if($siteLogo)
-                        <img src="{{ asset('storage/' . $siteLogo) }}" alt="ProGuidePh" style="max-width: 150px; height: auto;">
+                    @if($logoSrc)
+                        <img src="{{ $logoSrc }}" alt="ProGuidePh" style="max-width: 150px; height: auto;">
                     @else
                         <img src="{{ asset('images/icon.svg') }}" alt="ProGuidePh">
                     @endif

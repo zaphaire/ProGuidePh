@@ -441,9 +441,12 @@
 <nav class="navbar">
     <div class="nav-container">
         <a href="{{ route('home') }}" class="nav-brand">
-            @php $siteLogo = \App\Models\Setting::get('site_logo'); @endphp
-            @if($siteLogo)
-                <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" height="44" style="border-radius:8px;max-width:120px;height:auto;">
+            @php 
+$siteLogo = \App\Models\Setting::get('site_logo');
+$logoSrc = $siteLogo && (str_starts_with($siteLogo, 'http') || str_starts_with($siteLogo, '//')) ? $siteLogo : ($siteLogo ? asset('storage/' . $siteLogo) : null);
+@endphp
+            @if($logoSrc)
+                <img src="{{ $logoSrc }}" alt="{{ $siteName }}" height="44" style="border-radius:8px;max-width:120px;height:auto;">
             @else
                 <img src="{{ asset('images/icon.svg') }}" alt="{{ $siteName }}" height="44" style="border-radius:8px">
             @endif
@@ -485,9 +488,12 @@
         <div class="footer-grid">
             <div class="footer-brand">
                 <div class="brand-name">
-                    @php $siteLogo = \App\Models\Setting::get('site_logo'); @endphp
-                    @if($siteLogo)
-                        <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" height="36" style="border-radius:8px;max-width:120px;height:auto;">
+                    @php 
+$siteLogo = \App\Models\Setting::get('site_logo');
+$logoSrc = $siteLogo && (str_starts_with($siteLogo, 'http') || str_starts_with($siteLogo, '//')) ? $siteLogo : ($siteLogo ? asset('storage/' . $siteLogo) : null);
+@endphp
+                    @if($logoSrc)
+                        <img src="{{ $logoSrc }}" alt="{{ $siteName }}" height="36" style="border-radius:8px;max-width:120px;height:auto;">
                     @else
                         <img src="{{ asset('images/icon.svg') }}" alt="{{ $siteName }}" height="36" style="border-radius:8px">
                     @endif

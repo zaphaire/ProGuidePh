@@ -15,7 +15,7 @@ $currentLogo = \App\Models\Setting::get('site_logo');
     </div>
 </div>
 
-<form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data">
+<form method="POST" action="{{ route('admin.settings.update') }}">
     @csrf
 
     {{-- Logo --}}
@@ -26,19 +26,19 @@ $currentLogo = \App\Models\Setting::get('site_logo');
                 @if($currentLogo)
                     <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
                         <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Current Logo:</p>
-                        <img src="{{ asset('storage/' . $currentLogo) }}" alt="Site Logo" style="max-width: 200px; max-height: 80px; object-fit: contain;">
+                        <img src="{{ $currentLogo }}" alt="Site Logo" style="max-width: 200px; max-height: 80px; object-fit: contain;" onerror="this.style.display='none'">
                     </div>
                 @else
                     <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px dashed var(--text-muted);">
-                        <p style="font-size: 0.875rem; color: var(--text-muted);">No logo uploaded yet</p>
+                        <p style="font-size: 0.875rem; color: var(--text-muted);">No logo set yet</p>
                     </div>
                 @endif
             </div>
             <div style="flex: 1; min-width: 250px;">
-                <label class="form-label">Upload New Logo</label>
-                <input type="file" name="site_logo" accept="image/*" class="form-control" style="padding: 0.5rem;">
+                <label class="form-label">Logo URL (Google Drive, Dropbox, etc.)</label>
+                <input type="url" name="site_logo" value="{{ old('site_logo', $currentLogo) }}" class="form-control" placeholder="https://drive.google.com/uc?export=view&id=...">
                 <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 0.5rem;">
-                    Recommended: PNG, JPG, or SVG. Max 2MB. Recommended dimensions: 200x80px or similar aspect ratio.
+                    Paste your Google Drive share link or any direct image URL. For Google Drive, use the format: https://drive.google.com/uc?export=view&id=YOUR_FILE_ID
                 </small>
             </div>
         </div>

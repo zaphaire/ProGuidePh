@@ -232,13 +232,14 @@
 
 @php
 $siteLogo = \App\Models\Setting::get('site_logo');
+$logoSrc = $siteLogo && (str_starts_with($siteLogo, 'http') || str_starts_with($siteLogo, '//')) ? $siteLogo : ($siteLogo ? asset('storage/' . $siteLogo) : null);
 @endphp
 
 <aside class="sidebar">
     <div class="sidebar-header">
         <a href="{{ route('home') }}" class="sidebar-logo" style="text-decoration:none;">
-            @if($siteLogo)
-                <img src="{{ asset('storage/' . $siteLogo) }}" alt="Logo" style="height:40px;width:auto;max-width:80px;border-radius:10px;object-fit:contain;">
+            @if($logoSrc)
+                <img src="{{ $logoSrc }}" alt="Logo" style="height:40px;width:auto;max-width:80px;border-radius:10px;object-fit:contain;">
             @else
                 <img src="{{ asset('images/icon.svg') }}" alt="Logo" style="height:40px;width:40px;border-radius:10px;object-fit:cover;">
             @endif

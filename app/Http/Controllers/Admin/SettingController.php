@@ -22,30 +22,11 @@ class SettingController extends Controller
 
     public function update(Request $request)
     {
-        $data = $request->except(['_token', '_method', 'site_logo']);
+        $data = $request->except(['_token', '_method']);
 
         foreach ($data as $key => $value) {
-            Setting::set($key, $value);
-        }
-
-        if ($request->hasFile('site_logo')) {
-            $request->validate([
-                'site_logo' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            ]);
-
-            $logo = $request->file('site_logo');
-            $extension = $logo->getClientOriginalExtension();
-
-            if ($extension === 'svg') {
-                $filename = 'logo.svg';
-                $path = $logo->storeAs('logos', $filename, 'public');
-                Setting::set('site_logo', $path);
-            } else {
-                $filename = 'logo.'.$extension;
-                $path = $logo->storeAs('logos', $filename, 'public');
-                Setting::set('site_logo', $path);
-
-                $this->generateFavicon($logo);
+            if (! empty($value)) {
+                Setting::set($key, $value);
             }
         }
 
