@@ -24,20 +24,19 @@ $currentLogo = \App\Models\Setting::get('site_logo');
         
         @if($currentLogo)
             @php
-                if (str_starts_with($currentLogo, 'http')) {
-                    $logoUrl = $currentLogo;
-                } elseif (str_starts_with($currentLogo, 'logos/')) {
-                    $logoUrl = asset('storage/' . $currentLogo);
-                } else {
-                    $logoUrl = asset('storage/logos/' . $currentLogo);
-                }
+                $logoUrl = str_starts_with($currentLogo, 'http') ? $currentLogo : asset('storage/' . $currentLogo);
             @endphp
-            <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-subtle); margin-bottom: 1rem;">
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Current Logo:</p>
-                <img src="{{ $logoUrl }}" alt="Site Logo" style="max-width: 200px; max-height: 80px; object-fit: contain; background: white;" 
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
-                >
-                <p style="display:none; color: #ef4444; font-size: 0.875rem;">Unable to load image. Please enter a new Google Drive link below.</p>
+             <div style="background: var(--bg-input); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-subtle); margin-bottom: 1.5rem; text-align: center;">
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem; text-align: left;">Current Logo Preview:</p>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                    <img src="{{ $logoUrl }}" alt="Site Logo" id="logo-preview-img" style="max-width: 100%; max-height: 100px; object-fit: contain; background: white; padding: 10px; border-radius: 8px;" 
+                        onerror="this.style.display='none'; document.getElementById('logo-error-msg').style.display='block';"
+                    >
+                    <div id="logo-error-msg" style="display:none;">
+                        <p style="color: #ef4444; font-size: 0.875rem; font-weight: 600;">⚠️ Image could not be loaded.</p>
+                        <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem;">The URL may be invalid or the file is not publicly shared on Google Drive.</p>
+                    </div>
+                </div>
             </div>
         @endif
         
