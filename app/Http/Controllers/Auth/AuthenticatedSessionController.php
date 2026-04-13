@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Mail\LoginAlertMail;
-use App\Mail\LoginOtpCode;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -30,8 +31,8 @@ class AuthenticatedSessionController extends Controller
         $userAgent = $request->userAgent();
         $email = $request->email;
 
-        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
-            \Illuminate\Support\Facades\RateLimiter::hit($request->throttleKey());
+        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+            RateLimiter::hit($request->throttleKey());
 
             DB::table('login_logs')->insert([
                 'user_id' => null,
@@ -43,7 +44,7 @@ class AuthenticatedSessionController extends Controller
                 'created_at' => now(),
             ]);
 
-            $failedUser = \App\Models\User::where('email', $email)->first();
+            $failedUser = User::where('email', $email)->first();
             if ($failedUser) {
                 Mail::to($failedUser)->send(new LoginAlertMail(
                     $failedUser,
@@ -54,27 +55,14 @@ class AuthenticatedSessionController extends Controller
                 ));
             }
 
-            throw \Illuminate\Validation\ValidationException::withMessages([
+            throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
 
-        \Illuminate\Support\Facades\RateLimiter::clear($request->throttleKey());
+        RateLimiter::clear($request->throttleKey());
 
         $user = Auth::user();
-
-        $otpCode = $this->generateSecureOtp();
-        $hashedOtp = hash('sha256', $otpCode);
-
-        \Illuminate\Support\Facades\DB::table('users')
-            ->where('id', $user->id)
-            ->update([
-                'otp_code' => $hashedOtp,
-                'otp_expires_at' => now()->addMinutes(10),
-                'is_otp_verified' => false,
-            ]);
-
-        Mail::to($user)->send(new LoginOtpCode($otpCode, $user->name));
 
         session([
             'pending_user_id' => $user->id,
@@ -84,7 +72,7 @@ class AuthenticatedSessionController extends Controller
 
         Auth::logout();
 
-        return redirect()->route('otp.verify');
+        return redirect()->route('2fa.select');
     }
 
     private function generateSecureOtp(): string
@@ -93,17 +81,18 @@ class AuthenticatedSessionController extends Controller
         $hex = bin2hex($bytes);
         $int = hexdec($hex);
         $otp = $int % 1000000;
+
         return str_pad($otp, 6, '0', STR_PAD_LEFT);
     }
 
     public function destroy(Request $request): RedirectResponse
     {
         $user = $request->user();
-        
+
         if ($user) {
             $userAgent = $request->userAgent();
             $ipAddress = $request->ip();
-            
+
             DB::table('login_logs')->insert([
                 'user_id' => $user->id,
                 'email' => $user->email,
@@ -113,7 +102,7 @@ class AuthenticatedSessionController extends Controller
                 'failure_reason' => 'Logout',
                 'created_at' => now(),
             ]);
-            
+
             Mail::to($user)->send(new LoginAlertMail(
                 $user,
                 false,

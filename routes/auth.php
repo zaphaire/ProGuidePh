@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\TwoFactorAuthController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\VerifyOtpController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,11 @@ Route::middleware('guest')->group(function () {
     Route::post('verify-otp', [VerifyOtpController::class, 'verify'])->name('otp.verify');
     Route::post('resend-otp', [VerifyOtpController::class, 'resend'])->name('otp.resend');
     Route::post('cancel-login', [VerifyOtpController::class, 'cancel'])->name('otp.cancel');
+
+    Route::get('2fa', [TwoFactorAuthController::class, 'showSelection'])->name('2fa.select');
+    Route::post('2fa', [TwoFactorAuthController::class, 'selectMethod'])->name('2fa.select');
+    Route::post('2fa/authenticator/verify', [TwoFactorAuthController::class, 'verifyAuthenticator'])->name('2fa.authenticator.verify');
+    Route::post('2fa/cancel', [TwoFactorAuthController::class, 'cancel'])->name('2fa.cancel');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');

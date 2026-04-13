@@ -15,10 +15,11 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name', 'email', 'password', 'role', 'avatar', 'bio', 'otp_code', 'otp_expires_at', 'is_otp_verified',
+        'two_factor_secret', 'two_factor_enabled',
     ];
 
     protected $hidden = [
-        'password', 'remember_token', 'otp_code',
+        'password', 'remember_token', 'otp_code', 'two_factor_secret',
     ];
 
     protected function casts(): array
@@ -27,6 +28,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'otp_expires_at' => 'datetime',
             'password' => 'hashed',
+            'two_factor_enabled' => 'boolean',
         ];
     }
 
@@ -53,9 +55,9 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute(): string
     {
         if ($this->avatar) {
-            return asset('storage/' . $this->avatar);
+            return asset('storage/'.$this->avatar);
         }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=1e3a5f&color=fff';
+
+        return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&background=1e3a5f&color=fff';
     }
 }
-
