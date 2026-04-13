@@ -43,7 +43,7 @@
                     <td>
                         <div style="display:flex;gap:.4rem">
                             @if($user->two_factor_enabled)
-                                <form id="reset-2fa-{{ $user->id }}" action="{{ route('admin.users.reset-2fa', $user) }}" method="POST" style="display: none;">
+                                <form id="reset-2fa-{{ $user->id }}" action="{{ route('users.reset-2fa', $user) }}" method="POST" style="display: none;">
                                     @csrf
                                 </form>
                                 <button type="button" onclick="openDeleteModal('reset-2fa-{{ $user->id }}', 'Reset this user\'s 2FA? They will need to set it up again.')" class="btn btn-warning btn-sm">Reset 2FA</button>
