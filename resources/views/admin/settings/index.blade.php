@@ -4,6 +4,10 @@
 
 @section('content')
 
+@php
+$currentLogo = \App\Models\Setting::get('site_logo');
+@endphp
+
 <div class="page-header">
     <div>
         <h1>Site Settings</h1>
@@ -11,8 +15,34 @@
     </div>
 </div>
 
-<form method="POST" action="{{ route('admin.settings.update') }}">
+<form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data">
     @csrf
+
+    {{-- Logo --}}
+    <div class="admin-card" style="margin-bottom:1.5rem">
+        <h3 style="font-size:1rem;font-weight:700;color:var(--text-header);margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border-subtle)">🖼️ Website Logo</h3>
+        <div style="display: flex; align-items: flex-start; gap: 2rem; flex-wrap: wrap;">
+            <div style="flex-shrink: 0;">
+                @if($currentLogo)
+                    <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Current Logo:</p>
+                        <img src="{{ asset('storage/' . $currentLogo) }}" alt="Site Logo" style="max-width: 200px; max-height: 80px; object-fit: contain;">
+                    </div>
+                @else
+                    <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px dashed var(--text-muted);">
+                        <p style="font-size: 0.875rem; color: var(--text-muted);">No logo uploaded yet</p>
+                    </div>
+                @endif
+            </div>
+            <div style="flex: 1; min-width: 250px;">
+                <label class="form-label">Upload New Logo</label>
+                <input type="file" name="site_logo" accept="image/*" class="form-control" style="padding: 0.5rem;">
+                <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 0.5rem;">
+                    Recommended: PNG, JPG, or SVG. Max 2MB. Recommended dimensions: 200x80px or similar aspect ratio.
+                </small>
+            </div>
+        </div>
+    </div>
 
     {{-- General --}}
     <div class="admin-card" style="margin-bottom:1.5rem">

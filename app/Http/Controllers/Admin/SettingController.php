@@ -3,29 +3,129 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Page;
 use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class SettingController extends Controller
 {
     public function index()
     {
         $settings = Setting::all()->keyBy('key');
+
         return view('admin.settings.index', compact('settings'));
     }
 
     public function update(Request $request)
     {
-        $data = $request->except(['_token', '_method']);
+        $data = $request->except(['_token', '_method', 'site_logo']);
 
         foreach ($data as $key => $value) {
             Setting::set($key, $value);
         }
 
+        if ($request->hasFile('site_logo')) {
+            $request->validate([
+                'site_logo' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            ]);
+
+            $logo = $request->file('site_logo');
+            $extension = $logo->getClientOriginalExtension();
+
+            if ($extension === 'svg') {
+                $filename = 'logo.svg';
+                $path = $logo->storeAs('logos', $filename, 'public');
+                Setting::set('site_logo', $path);
+            } else {
+                $filename = 'logo.'.$extension;
+                $path = $logo->storeAs('logos', $filename, 'public');
+                Setting::set('site_logo', $path);
+
+                $this->generateFavicon($logo);
+            }
+        }
+
         Cache::flush();
 
         return redirect()->route('admin.settings.index')->with('success', 'Settings saved successfully!');
+    }
+
+    private function generateFavicon($logo)
+    {
+        try {
+            $extension = strtolower($logo->getClientOriginalExtension());
+
+            if ($extension === 'svg') {
+                $svgContent = file_get_contents($logo->getRealPath());
+                file_put_contents(public_path('favicon.svg'), $svgContent);
+                file_put_contents(public_path('favicon.svg'), $svgContent);
+
+                return;
+            }
+
+            $imageCreateFunc = 'imagecreatefrom'.($extension === 'jpg' ? 'jpeg' : $extension);
+
+            if (! function_exists($imageCreateFunc)) {
+                Log::error('Cannot create image from '.$extension);
+
+                return;
+            }
+
+            $sourceImage = $imageCreateFunc($logo->getRealPath());
+
+            if (! $sourceImage) {
+                Log::error('Failed to create source image');
+
+                return;
+            }
+
+            $this->createFaviconFromImage($sourceImage, 32, public_path('favicon.ico'));
+            $this->createFaviconFromImage($sourceImage, 32, public_path('favicon-32x32.png'), 'png');
+            $this->createFaviconFromImage($sourceImage, 180, public_path('apple-touch-icon.png'), 'png');
+            $this->createFaviconFromImage($sourceImage, 192, public_path('android-chrome-192x192.png'), 'png');
+            $this->createFaviconFromImage($sourceImage, 512, public_path('android-chrome-512x512.png'), 'png');
+
+            $publicPath = public_path('favicons');
+            if (! File::exists($publicPath)) {
+                File::makeDirectory($publicPath, 0755, true);
+            }
+
+            $sizes = [16, 32, 48, 64, 128, 192, 512];
+            foreach ($sizes as $size) {
+                $this->createFaviconFromImage($sourceImage, $size, $publicPath.'/icon-'.$size.'.png', 'png');
+            }
+
+            imagedestroy($sourceImage);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to generate favicon: '.$e->getMessage());
+        }
+    }
+
+    private function createFaviconFromImage($sourceImage, int $size, string $path, string $format = 'ico')
+    {
+        $newImage = imagecreatetruecolor($size, $size);
+        imagealphablending($newImage, false);
+        imagesavealpha($newImage, true);
+
+        imagecopyresampled(
+            $newImage, $sourceImage,
+            0, 0, 0, 0,
+            $size, $size,
+            imagesx($sourceImage), imagesy($sourceImage)
+        );
+
+        if ($format === 'png') {
+            imagepng($newImage, $path, 9);
+        } else {
+            imagepng($newImage, $path, 9);
+        }
+
+        imagedestroy($newImage);
     }
 
     public function syncAboutPage()
@@ -105,15 +205,15 @@ class SettingController extends Controller
 </div>
 HTML;
 
-        \App\Models\Page::updateOrCreate(
+        Page::updateOrCreate(
             ['slug' => 'about'],
             [
-                'user_id' => \App\Models\User::where('role', 'admin')->first()->id ?? (\App\Models\User::first()->id ?? 1),
+                'user_id' => User::where('role', 'admin')->first()->id ?? (User::first()->id ?? 1),
                 'title' => 'About Us',
                 'body' => $body,
                 'is_published' => true,
                 'meta_title' => 'About ProGuidePh - Your Digital Tambayan for Practical Knowledge',
-                'meta_description' => 'Learn more about ProGuidePh, our mission to share practical wisdom, and our commitment to providing helpful guides for Filipinos.'
+                'meta_description' => 'Learn more about ProGuidePh, our mission to share practical wisdom, and our commitment to providing helpful guides for Filipinos.',
             ]
         );
 

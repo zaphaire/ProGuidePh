@@ -230,10 +230,18 @@
 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
+@php
+$siteLogo = \App\Models\Setting::get('site_logo');
+@endphp
+
 <aside class="sidebar">
     <div class="sidebar-header">
         <a href="{{ route('home') }}" class="sidebar-logo" style="text-decoration:none;">
-            <img src="{{ asset('images/icon.svg') }}" alt="Logo" style="height:40px;width:40px;border-radius:10px;object-fit:cover;">
+            @if($siteLogo)
+                <img src="{{ asset('storage/' . $siteLogo) }}" alt="Logo" style="height:40px;width:auto;max-width:80px;border-radius:10px;object-fit:contain;">
+            @else
+                <img src="{{ asset('images/icon.svg') }}" alt="Logo" style="height:40px;width:40px;border-radius:10px;object-fit:cover;">
+            @endif
             <div>
                 <span class="name">{{ \App\Models\Setting::get('site_name', 'ProGuidePh') }}</span>
                 <span class="sub">Admin Panel</span>

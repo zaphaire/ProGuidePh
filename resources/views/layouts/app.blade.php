@@ -441,7 +441,12 @@
 <nav class="navbar">
     <div class="nav-container">
         <a href="{{ route('home') }}" class="nav-brand">
-            <img src="{{ asset('images/icon.svg') }}" alt="{{ $siteName }}" height="44" style="border-radius:8px">
+            @php $siteLogo = \App\Models\Setting::get('site_logo'); @endphp
+            @if($siteLogo)
+                <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" height="44" style="border-radius:8px;max-width:120px;height:auto;">
+            @else
+                <img src="{{ asset('images/icon.svg') }}" alt="{{ $siteName }}" height="44" style="border-radius:8px">
+            @endif
             <div>
                 <span class="brand-name">{{ $siteName }}</span>
                 <span class="brand-sub">{{ \App\Models\Setting::get('site_tagline', 'Practical Tips & Guides') }}</span>
@@ -480,7 +485,12 @@
         <div class="footer-grid">
             <div class="footer-brand">
                 <div class="brand-name">
-                    <img src="{{ asset('images/icon.svg') }}" alt="{{ $siteName }}" height="36" style="border-radius:8px">
+                    @php $siteLogo = \App\Models\Setting::get('site_logo'); @endphp
+                    @if($siteLogo)
+                        <img src="{{ asset('storage/' . $siteLogo) }}" alt="{{ $siteName }}" height="36" style="border-radius:8px;max-width:120px;height:auto;">
+                    @else
+                        <img src="{{ asset('images/icon.svg') }}" alt="{{ $siteName }}" height="36" style="border-radius:8px">
+                    @endif
                     <span>{{ $siteName }}</span>
                 </div>
                 <p>Your digital tambayan for practical tips and helpful guides written by Filipinos, for Filipinos. We share useful information you can apply in your daily life.</p>

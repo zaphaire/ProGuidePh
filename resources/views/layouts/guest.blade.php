@@ -53,10 +53,15 @@
         </style>
     </head>
     <body>
+        @php $siteLogo = \App\Models\Setting::get('site_logo'); @endphp
         <div class="login-container">
             <div class="login-left">
                 <div class="login-left-content">
-                    <img src="{{ asset('images/icon.svg') }}" alt="ProGuidePh">
+                    @if($siteLogo)
+                        <img src="{{ asset('storage/' . $siteLogo) }}" alt="ProGuidePh" style="max-width: 150px; height: auto;">
+                    @else
+                        <img src="{{ asset('images/icon.svg') }}" alt="ProGuidePh">
+                    @endif
                     <h1><span>Pro</span><span>GuidePh</span></h1>
                     <p>Your digital tambayan for practical tips and helpful guides written by Filipinos, for Filipinos.</p>
                     
