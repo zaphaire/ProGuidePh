@@ -21,25 +21,27 @@ $currentLogo = \App\Models\Setting::get('site_logo');
     {{-- Logo --}}
     <div class="admin-card" style="margin-bottom:1.5rem">
         <h3 style="font-size:1rem;font-weight:700;color:var(--text-header);margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border-subtle)">🖼️ Website Logo</h3>
-        <div style="display: flex; align-items: flex-start; gap: 2rem; flex-wrap: wrap;">
-            <div style="flex-shrink: 0;">
-                @if($currentLogo)
-                    <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
-                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Current Logo:</p>
-                        <img src="{{ $currentLogo }}" alt="Site Logo" style="max-width: 200px; max-height: 80px; object-fit: contain;" onerror="this.style.display='none'">
-                    </div>
-                @else
-                    <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px dashed var(--text-muted);">
-                        <p style="font-size: 0.875rem; color: var(--text-muted);">No logo set yet</p>
-                    </div>
-                @endif
+        
+        @if($currentLogo)
+            <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-subtle); margin-bottom: 1rem;">
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Current Logo Preview:</p>
+                <img src="{{ $currentLogo }}" alt="Site Logo" style="max-width: 200px; max-height: 80px; object-fit: contain;" onerror="this.parentElement.innerHTML='<p style=\'color:#ef4444\'>Unable to load image. Check the URL.</p>'">
             </div>
-            <div style="flex: 1; min-width: 250px;">
-                <label class="form-label">Logo URL (Google Drive, Dropbox, etc.)</label>
-                <input type="url" name="site_logo" value="{{ old('site_logo', $currentLogo) }}" class="form-control" placeholder="https://drive.google.com/uc?export=view&id=...">
-                <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 0.5rem;">
-                    Paste your Google Drive share link or any direct image URL. For Google Drive, use the format: https://drive.google.com/uc?export=view&id=YOUR_FILE_ID
-                </small>
+        @endif
+        
+        <div>
+            <label class="form-label">Logo URL (Google Drive, Dropbox, etc.)</label>
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="url" name="site_logo" value="{{ $currentLogo ?? '' }}" class="form-control" placeholder="https://drive.google.com/uc?export=view&id=..." style="flex: 1;">
+                <button type="submit" class="btn btn-primary-admin" style="white-space: nowrap;">Save Logo</button>
+            </div>
+            <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 0.5rem;">
+                For Google Drive: Get share link → Copy the file ID (1itEJMdt2MnufDS9-qp-c9CQ1HVkqflwp) → Use: https://drive.google.com/uc?export=view&id=YOUR_FILE_ID
+            </small>
+            
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-input); border-radius: 8px; border: 1px solid var(--border-subtle);">
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong>Quick Example for your link:</strong></p>
+                <code style="font-size: 0.75rem; word-break: break-all; color: var(--accent);">https://drive.google.com/uc?export=view&id=1itEJMdt2MnufDS9-qp-c9CQ1HVkqflwp</code>
             </div>
         </div>
     </div>
