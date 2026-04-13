@@ -23,9 +23,15 @@ $currentLogo = \App\Models\Setting::get('site_logo');
         <h3 style="font-size:1rem;font-weight:700;color:var(--text-header);margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border-subtle)">🖼️ Website Logo</h3>
         
         @if($currentLogo)
+            @php
+                $logoUrl = str_starts_with($currentLogo, 'http') ? $currentLogo : asset('storage/' . $currentLogo);
+            @endphp
             <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-subtle); margin-bottom: 1rem;">
                 <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Current Logo Preview:</p>
-                <img src="{{ str_starts_with($currentLogo, 'http') ? $currentLogo : asset('storage/' . $currentLogo) }}" alt="Site Logo" style="max-width: 200px; max-height: 80px; object-fit: contain;" onerror="this.parentElement.innerHTML='<p style=\'color:#ef4444\'>Unable to load image. Check the URL.</p>'">
+                <img src="{{ $logoUrl }}" alt="Site Logo" style="max-width: 200px; max-height: 80px; object-fit: contain;" 
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                >
+                <p style="display:none; color: #ef4444; font-size: 0.875rem;">Unable to load image. Please re-upload.</p>
             </div>
         @endif
         

@@ -60,6 +60,10 @@ class SettingController extends Controller
             if ($localPath) {
                 return $localPath;
             }
+
+            Log::warning('Failed to download logo from Google Drive, using direct URL: '.$url);
+
+            return $url;
         }
 
         return $url;
@@ -71,15 +75,25 @@ class SettingController extends Controller
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+            curl_setopt($ch, CURLOPT_COOKIEJAR, storage_path('cookies.txt'));
+            curl_setopt($ch, CURLOPT_COOKIEFILE, storage_path('cookies.txt'));
             $imageData = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
             curl_close($ch);
 
             if ($httpCode !== 200 || empty($imageData)) {
+                Log::error('Download failed - HTTP: '.$httpCode.', Data length: '.strlen($imageData));
+
+                return null;
+            }
+
+            if (strlen($imageData) < 100) {
+                Log::error('Downloaded data too small: '.strlen($imageData));
+
                 return null;
             }
 
@@ -91,6 +105,10 @@ class SettingController extends Controller
                 str_contains($contentType ?? '', 'svg') => 'svg',
                 default => 'png',
             };
+
+            if ($extension === 'svg' || str_starts_with($imageData, '<?xml') || str_starts_with($imageData, '<svg')) {
+                $extension = 'svg';
+            }
 
             $filename = 'logo-'.time().'.'.$extension;
             $path = 'logos/'.$filename;
