@@ -449,9 +449,9 @@ $siteLogo = \App\Models\Setting::get('site_logo');
 $logoSrc = $siteLogo && (str_starts_with($siteLogo, 'http') || str_starts_with($siteLogo, '//')) ? $siteLogo : ($siteLogo ? asset('storage/' . $siteLogo) : null);
 @endphp
             @if($logoSrc)
-                <img src="{{ $logoSrc }}" alt="{{ $siteName }}" height="44" style="border-radius:8px;max-width:120px;height:auto;">
+                <img src="{{ $logoSrc }}" alt="{{ $siteName }}" style="height:44px;width:auto;max-width:100px;object-fit:contain;border-radius:8px;">
             @else
-                <img src="{{ asset('images/icon.svg') }}" alt="{{ $siteName }}" height="44" style="border-radius:8px">
+                <img src="{{ asset('images/icon.svg') }}" alt="{{ $siteName }}" style="height:44px;width:44px;border-radius:8px;object-fit:cover;">
             @endif
             <div>
                 <span class="brand-name">{{ $siteName }}</span>
@@ -496,9 +496,9 @@ $siteLogo = \App\Models\Setting::get('site_logo');
 $logoSrc = $siteLogo && (str_starts_with($siteLogo, 'http') || str_starts_with($siteLogo, '//')) ? $siteLogo : ($siteLogo ? asset('storage/' . $siteLogo) : null);
 @endphp
                     @if($logoSrc)
-                        <img src="{{ $logoSrc }}" alt="{{ $siteName }}" height="36" style="border-radius:8px;max-width:120px;height:auto;">
+                        <img src="{{ $logoSrc }}" alt="{{ $siteName }}" style="height:36px;width:auto;max-width:90px;object-fit:contain;border-radius:8px;">
                     @else
-                        <img src="{{ asset('images/icon.svg') }}" alt="{{ $siteName }}" height="36" style="border-radius:8px">
+                        <img src="{{ asset('images/icon.svg') }}" alt="{{ $siteName }}" style="height:36px;width:36px;border-radius:8px;object-fit:cover;">
                     @endif
                     <span>{{ $siteName }}</span>
                 </div>
