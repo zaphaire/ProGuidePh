@@ -392,9 +392,16 @@ class TwoFactorAuthController extends Controller
 
         for ($i = -1; $i <= 1; $i++) {
             $time = $timeSlot + $i;
-            $hmac = hash_hmac('sha1', pack('J', $time), $secretKey, true);
+            $timeHex = str_pad(dechex($time), 16, '0', STR_PAD_LEFT);
+            $timeBin = hex2bin($timeHex);
+
+            $hmac = hash_hmac('sha1', $timeBin, $secretKey, true);
             $offset = ord(substr($hmac, -1)) & 0x0F;
-            $code = (unpack('J', substr($hmac, $offset, 4))[1] & 0x7FFFFFFF);
+
+            $hash = substr($hmac, $offset, 4);
+            $code = unpack('N', $hash)[1];
+            $code = $code & 0x7FFFFFFF;
+
             $codes[] = str_pad($code % 1000000, 6, '0', STR_PAD_LEFT);
         }
 
@@ -406,17 +413,26 @@ class TwoFactorAuthController extends Controller
         $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
         $input = str_replace('=', '', $input);
         $input = strtoupper($input);
-        $binary = '';
+
+        $output = '';
+        $buffer = 0;
+        $bitsLeft = 0;
 
         foreach (str_split($input) as $char) {
             $val = strpos($alphabet, $char);
             if ($val === false) {
                 continue;
             }
-            $binary .= str_pad(decbin($val), 5, '0', STR_PAD_LEFT);
+            $buffer = ($buffer << 5) | $val;
+            $bitsLeft += 5;
+
+            if ($bitsLeft >= 8) {
+                $bitsLeft -= 8;
+                $output .= chr(($buffer >> $bitsLeft) & 0xFF);
+            }
         }
 
-        return pack('B*', $binary);
+        return $output;
     }
 
     public function showEnable(Request $request): View
