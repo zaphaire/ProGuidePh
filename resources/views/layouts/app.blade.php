@@ -466,6 +466,7 @@ $logoSrc = $siteLogo && (str_starts_with($siteLogo, 'http') || str_starts_with($
         <div class="nav-links" id="navLinks">
             <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
             <a href="{{ route('posts.index') }}" class="{{ request()->routeIs('posts.*') ? 'active' : '' }}">Articles</a>
+            <a href="{{ route('pages.show', 'free-services') }}" class="{{ request()->is('pages/free-services') ? 'active' : '' }}">Free Services</a>
             <a href="{{ route('forum.index') }}" class="{{ request()->routeIs('forum.*') ? 'active' : '' }}">Forum</a>
             <a href="{{ route('pages.show', 'about') }}" class="{{ request()->is('pages/about') ? 'active' : '' }}">About</a>
             <a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a>
