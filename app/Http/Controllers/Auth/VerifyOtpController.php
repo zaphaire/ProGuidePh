@@ -5,31 +5,32 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Mail\LoginAlertMail;
 use App\Mail\LoginOtpCode;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class VerifyOtpController extends Controller
 {
     private const MAX_OTP_ATTEMPTS = 5;
+
     private const OTP_LOCKOUT_SECONDS = 900;
 
     public function show(): View|RedirectResponse
     {
-        if (!session()->has('pending_user_id')) {
+        if (! session()->has('pending_user_id')) {
             return redirect()->route('login');
         }
 
-        $attemptsKey = 'otp_attempts_' . session('pending_user_id');
+        $attemptsKey = 'otp_attempts_'.session('pending_user_id');
         $lockedUntil = session('otp_locked_until');
 
         if ($lockedUntil && now()->timestamp < $lockedUntil) {
             $remaining = $lockedUntil - now()->timestamp;
+
             return view('auth.verify-otp')->with('locked', true)->with('remaining', $remaining);
         }
 
@@ -45,22 +46,23 @@ class VerifyOtpController extends Controller
         $userId = session('pending_user_id');
         $boundIp = session('otp_ip_bound');
 
-        if (!$userId) {
+        if (! $userId) {
             return redirect()->route('login');
         }
 
-        $attemptsKey = 'otp_attempts_' . $userId;
+        $attemptsKey = 'otp_attempts_'.$userId;
         $attempts = session($attemptsKey, 0);
         $lockedUntil = session('otp_locked_until');
 
         if ($lockedUntil && now()->timestamp < $lockedUntil) {
             $remaining = $lockedUntil - now()->timestamp;
-            return back()->withErrors(['otp_code' => 'Too many failed attempts. Try again in ' . ceil($remaining / 60) . ' minutes.']);
+
+            return back()->withErrors(['otp_code' => 'Too many failed attempts. Try again in '.ceil($remaining / 60).' minutes.']);
         }
 
-        $user = \App\Models\User::find($userId);
+        $user = User::find($userId);
 
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('login');
         }
 
@@ -143,13 +145,13 @@ class VerifyOtpController extends Controller
             return back()->withErrors(['otp_code' => 'Too many failed attempts. Please wait before requesting a new code.']);
         }
 
-        if (!$userId) {
+        if (! $userId) {
             return redirect()->route('login');
         }
 
-        $user = \App\Models\User::find($userId);
+        $user = User::find($userId);
 
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('login');
         }
 
@@ -165,9 +167,35 @@ class VerifyOtpController extends Controller
 
         Mail::to($user)->send(new LoginOtpCode($otpCode, $user->name));
 
-        session(['otp_attempts_' . $userId => 0]);
+        session(['otp_attempts_'.$userId => 0]);
 
         return back()->with('status', 'A new verification code has been sent to your email.');
+    }
+
+    public function cancel(Request $request): RedirectResponse
+    {
+        $userId = session('pending_user_id');
+
+        if ($userId) {
+            DB::table('users')
+                ->where('id', $userId)
+                ->update([
+                    'otp_code' => null,
+                    'otp_expires_at' => null,
+                    'is_otp_verified' => false,
+                ]);
+        }
+
+        session()->forget([
+            'pending_user_id',
+            'otp_ip_bound',
+            'otp_generated_at',
+            'otp_verified',
+            'otp_attempts_'.$userId,
+            'otp_locked_until',
+        ]);
+
+        return redirect()->route('login');
     }
 
     private function generateSecureOtp(): string
@@ -176,6 +204,7 @@ class VerifyOtpController extends Controller
         $hex = bin2hex($bytes);
         $int = hexdec($hex);
         $otp = $int % 1000000;
+
         return str_pad($otp, 6, '0', STR_PAD_LEFT);
     }
 }

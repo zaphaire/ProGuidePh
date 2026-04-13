@@ -34,7 +34,10 @@
         </button>
     </form>
 
-    <a class="forgot-link" href="{{ route('logout') }}" style="margin-top: 1rem; display: block;">
-        Cancel Login
-    </a>
+    <form method="POST" action="{{ route('otp.cancel') }}" style="margin-top: 1rem;">
+        @csrf
+        <button type="submit" class="forgot-link" style="background: none; border: none; cursor: pointer; text-decoration: underline;">
+            Cancel Login
+        </button>
+    </form>
 </x-guest-layout>

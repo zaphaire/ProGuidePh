@@ -22,6 +22,7 @@ Route::middleware('guest')->group(function () {
     Route::get('verify-otp', [VerifyOtpController::class, 'show'])->name('otp.verify');
     Route::post('verify-otp', [VerifyOtpController::class, 'verify'])->name('otp.verify');
     Route::post('resend-otp', [VerifyOtpController::class, 'resend'])->name('otp.resend');
+    Route::post('cancel-login', [VerifyOtpController::class, 'cancel'])->name('otp.cancel');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
