@@ -17,7 +17,7 @@
         <p class="animate-slide delay-1">Discover practical tips, helpful guides, and useful information written by Filipinos, for Filipinos. Your digital tambayan for everyday wisdom.</p>
         <div class="hero-actions animate-slide delay-2">
             <a href="{{ route('posts.index') }}" class="btn-primary"><span>📖</span> Explore Articles</a>
-            <a href="{{ route('pages.show', 'about') }}" class="btn-secondary">About Us</a>
+            <a href="{{ route('pages.show', 'free-services') }}" class="btn-secondary"><span>🛠️</span> Free Services</a>
         </div>
         <div class="hero-stats animate-slide delay-3">
                 <div class="stat-item">
@@ -34,6 +34,18 @@
                 </div>
             </div>
         </div>
+    </div>
+</section>
+
+{{-- Free Services Banner --}}
+<section style="background: linear-gradient(135deg, #2c4c3b 0%, #3d6b52 100%); padding: 3rem 1rem;">
+    <div class="container" style="text-align: center;">
+        <h2 style="color: white; font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem;">🛠️ Free Online Services</h2>
+        <p style="color: rgba(255,255,255,0.85); margin-bottom: 1.5rem;">Generate your PDS 2025, access AI tools, and more - completely free!</p>
+        <a href="{{ route('pages.show', 'free-services') }}" style="background: #d6a848; color: #1e293b; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; display: inline-flex; gap: 0.5rem; text-decoration: none;">
+            <span>Explore Services</span>
+            <span>→</span>
+        </a>
     </div>
 </section>
 
