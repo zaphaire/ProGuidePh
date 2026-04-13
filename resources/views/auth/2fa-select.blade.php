@@ -2,6 +2,12 @@
     <h2>Two-Factor Authentication</h2>
     <p class="subtitle">Choose how you want to verify your identity</p>
 
+    @if($errors->any())
+        <div style="background: #fee2e2; color: #991b1b; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.875rem;">
+            {{ $errors->first() }}
+        </div>
+    @endif
+
     <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem;">
         <form method="POST" action="{{ route('2fa.select') }}">
             @csrf

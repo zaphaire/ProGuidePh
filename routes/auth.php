@@ -62,6 +62,13 @@ Route::middleware('auth')->group(function () {
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
+    Route::get('two-factor-authenticator', [TwoFactorAuthController::class, 'showEnable'])
+        ->name('2fa.show');
+    Route::post('two-factor-authenticator', [TwoFactorAuthController::class, 'enable'])
+        ->name('2fa.enable');
+    Route::delete('two-factor-authenticator', [TwoFactorAuthController::class, 'disable'])
+        ->name('2fa.disable');
+
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });

@@ -37,7 +37,14 @@ class TwoFactorAuthController extends Controller
         $method = $request->input('method');
 
         if ($method === 'authenticator') {
-            return $this->showAuthenticatorVerify();
+            $userId = session('pending_user_id');
+            $user = User::find($userId);
+
+            if ($user && $user->two_factor_enabled && $user->two_factor_secret) {
+                return $this->showAuthenticatorVerify();
+            }
+
+            return $this->sendEmailOtp();
         }
 
         return $this->sendEmailOtp();
@@ -82,8 +89,8 @@ class TwoFactorAuthController extends Controller
         $userId = session('pending_user_id');
         $user = User::find($userId);
 
-        if (! $user || ! $user->two_factor_enabled) {
-            return back()->withErrors(['authenticator' => 'Authenticator is not set up for this account.']);
+        if (! $user || ! $user->two_factor_enabled || ! $user->two_factor_secret) {
+            return redirect()->route('2fa.select')->withErrors(['authenticator' => 'Authenticator is not set up. Please use email verification instead.']);
         }
 
         session(['2fa_method' => 'authenticator']);
@@ -350,5 +357,84 @@ class TwoFactorAuthController extends Controller
         }
 
         return pack('B*', $binary);
+    }
+
+    public function showEnable(Request $request): View
+    {
+        $user = $request->user();
+        $secret = $this->generateSecret();
+        $qrCode = $this->generateQrCode($user, $secret);
+
+        $request->session()->put('2fa_secret', $secret);
+
+        return view('profile.partials.enable-two-factor-form', compact('secret', 'qrCode'));
+    }
+
+    public function enable(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'code' => ['required', 'string', 'size:6'],
+        ]);
+
+        $user = $request->user();
+        $secret = $request->session()->get('2fa_secret');
+
+        if (! $secret) {
+            return back()->withErrors(['code' => 'Session expired. Please try again.']);
+        }
+
+        if (! $this->verifyTotp($secret, $request->input('code'))) {
+            return back()->withErrors(['code' => 'Invalid code. Please try again.']);
+        }
+
+        $user->two_factor_secret = $secret;
+        $user->two_factor_enabled = true;
+        $user->save();
+
+        $request->session()->forget('2fa_secret');
+
+        return redirect()->route('profile.edit')->with('status', 'two-factor-authenticator-enabled');
+    }
+
+    public function disable(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $user->two_factor_secret = null;
+        $user->two_factor_enabled = false;
+        $user->save();
+
+        return redirect()->route('profile.edit')->with('status', 'two-factor-authenticator-disabled');
+    }
+
+    public function generateSecret(): string
+    {
+        $bytes = random_bytes(20);
+        $base32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+        $secret = '';
+
+        foreach (str_split(bin2hex($bytes), 8) as $chunk) {
+            $int = hexdec($chunk);
+            for ($i = 0; $i < 8; $i++) {
+                $secret .= $base32[$int & 0x1F];
+                $int >>= 5;
+            }
+        }
+
+        return strtoupper(substr($secret, 0, 32));
+    }
+
+    private function generateQrCode(User $user, string $secret): string
+    {
+        $qrCodeUrl = sprintf(
+            'otpauth://totp/%s:%s?secret=%s&issuer=%s',
+            rawurlencode(config('app.name')),
+            rawurlencode($user->email),
+            $secret,
+            rawurlencode(config('app.name'))
+        );
+
+        $pngData = base64_encode(file_get_contents('https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl='.urlencode($qrCodeUrl)));
+
+        return '<img src="data:image/png;base64,'.$pngData.'" alt="QR Code" />';
     }
 }

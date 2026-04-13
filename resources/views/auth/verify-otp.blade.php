@@ -34,6 +34,12 @@
         </button>
     </form>
 
+    <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: center;">
+        <a href="{{ route('2fa.select') }}" style="color: #6b7280; text-decoration: underline;">
+            Back to choices
+        </a>
+    </div>
+
     <form method="POST" action="{{ route('otp.cancel') }}" style="margin-top: 1rem;">
         @csrf
         <button type="submit" class="forgot-link" style="background: none; border: none; cursor: pointer; text-decoration: underline;">
