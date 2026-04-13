@@ -24,14 +24,20 @@ $currentLogo = \App\Models\Setting::get('site_logo');
         
         @if($currentLogo)
             @php
-                $logoUrl = str_starts_with($currentLogo, 'http') ? $currentLogo : asset('storage/' . $currentLogo);
+                if (str_starts_with($currentLogo, 'http')) {
+                    $logoUrl = $currentLogo;
+                } elseif (str_starts_with($currentLogo, 'logos/')) {
+                    $logoUrl = asset('storage/' . $currentLogo);
+                } else {
+                    $logoUrl = asset('storage/logos/' . $currentLogo);
+                }
             @endphp
             <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-subtle); margin-bottom: 1rem;">
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Current Logo Preview:</p>
-                <img src="{{ $logoUrl }}" alt="Site Logo" style="max-width: 200px; max-height: 80px; object-fit: contain;" 
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Current Logo:</p>
+                <img src="{{ $logoUrl }}" alt="Site Logo" style="max-width: 200px; max-height: 80px; object-fit: contain; background: white;" 
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
                 >
-                <p style="display:none; color: #ef4444; font-size: 0.875rem;">Unable to load image. Please re-upload.</p>
+                <p style="display:none; color: #ef4444; font-size: 0.875rem;">Unable to load image. Please enter a new Google Drive link below.</p>
             </div>
         @endif
         
