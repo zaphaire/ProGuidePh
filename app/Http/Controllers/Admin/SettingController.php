@@ -42,16 +42,19 @@ class SettingController extends Controller
     {
         $url = trim($url);
 
+        // Convert Google Drive file/view link to direct embeddable URL
         if (preg_match('/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/', $url, $matches)) {
-            $fileId = $matches[1];
-
-            return 'https://drive.google.com/uc?export=view&id='.$fileId;
+            return 'https://lh3.googleusercontent.com/d/'.$matches[1];
         }
 
+        // Convert uc?export=view to direct embeddable URL
         if (preg_match('/drive\.google\.com\/uc\?export=view&id=([a-zA-Z0-9_-]+)/', $url, $matches)) {
-            $fileId = $matches[1];
+            return 'https://lh3.googleusercontent.com/d/'.$matches[1];
+        }
 
-            return 'https://drive.google.com/uc?export=view&id='.$fileId;
+        // Convert uc?id= variant
+        if (preg_match('/drive\.google\.com\/uc\?.*id=([a-zA-Z0-9_-]+)/', $url, $matches)) {
+            return 'https://lh3.googleusercontent.com/d/'.$matches[1];
         }
 
         return $url;
