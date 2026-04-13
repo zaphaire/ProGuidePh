@@ -485,13 +485,8 @@ class TwoFactorAuthController extends Controller
 
     public function generateQrCode(User $user, string $secret): string
     {
-        $qrCodeUrl = sprintf(
-            'otpauth://totp/%s:%s?secret=%s&issuer=%s',
-            rawurlencode(config('app.name')),
-            rawurlencode($user->email),
-            $secret,
-            rawurlencode(config('app.name'))
-        );
+        $appName = config('app.name', 'ProGuidePh');
+        $qrCodeUrl = 'otpauth://totp/'.rawurlencode($appName).':'.rawurlencode($user->email).'?secret='.$secret.'&issuer='.rawurlencode($appName);
 
         $qrCodeUrl = urlencode($qrCodeUrl);
 
