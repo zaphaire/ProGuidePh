@@ -44,7 +44,7 @@ class TwoFactorAuthController extends Controller
                 return $this->showAuthenticatorVerify();
             }
 
-            return $this->sendEmailOtp();
+            return $this->showAuthenticatorSetup();
         }
 
         return $this->sendEmailOtp();
@@ -89,13 +89,73 @@ class TwoFactorAuthController extends Controller
         $userId = session('pending_user_id');
         $user = User::find($userId);
 
-        if (! $user || ! $user->two_factor_enabled || ! $user->two_factor_secret) {
-            return redirect()->route('2fa.select')->withErrors(['authenticator' => 'Authenticator is not set up. Please use email verification instead.']);
+        if (! $user) {
+            return redirect()->route('2fa.select');
+        }
+
+        if (! $user->two_factor_enabled || ! $user->two_factor_secret) {
+            return $this->showAuthenticatorSetup();
         }
 
         session(['2fa_method' => 'authenticator']);
 
         return view('auth.verify-authenticator');
+    }
+
+    public function showAuthenticatorSetup(): View|RedirectResponse
+    {
+        if (! session()->has('pending_user_id')) {
+            return redirect()->route('login');
+        }
+
+        $userId = session('pending_user_id');
+        $user = User::find($userId);
+
+        if (! $user) {
+            return redirect()->route('2fa.select');
+        }
+
+        $secret = $this->generateSecret();
+        $qrCode = $this->generateQrCode($user, $secret);
+
+        session(['2fa_setup_secret' => $secret]);
+
+        return view('auth.setup-authenticator', compact('secret', 'qrCode'));
+    }
+
+    public function setupAuthenticator(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'code' => ['required', 'string', 'size:6'],
+        ]);
+
+        $userId = session('pending_user_id');
+        $secret = session('2fa_setup_secret');
+
+        if (! $userId || ! $secret) {
+            return redirect()->route('2fa.select');
+        }
+
+        $user = User::find($userId);
+
+        if (! $user) {
+            return redirect()->route('2fa.select');
+        }
+
+        if (! $this->verifyTotp($secret, $request->input('code'))) {
+            return back()->withErrors(['code' => 'Invalid code. Please try again.']);
+        }
+
+        DB::table('users')
+            ->where('id', $user->id)
+            ->update([
+                'two_factor_secret' => $secret,
+                'two_factor_enabled' => true,
+            ]);
+
+        session()->forget('2fa_setup_secret');
+
+        return $this->completeLogin($request, $user);
     }
 
     public function verifyAuthenticator(Request $request): RedirectResponse

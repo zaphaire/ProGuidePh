@@ -12,16 +12,17 @@ class UserController extends Controller
     public function index()
     {
         $users = User::withCount('posts')->latest()->paginate(15);
+
         return view('admin.users.index', compact('users'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
             'password' => 'required|min:8|confirmed',
-            'role'     => 'required|in:admin,editor,viewer',
+            'role' => 'required|in:admin,editor,viewer',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -33,9 +34,9 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'role'  => 'required|in:admin,editor,viewer',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,'.$user->id,
+            'role' => 'required|in:admin,editor,viewer',
         ]);
 
         if ($request->filled('password')) {
@@ -44,6 +45,7 @@ class UserController extends Controller
         }
 
         $user->update($validated);
+
         return redirect()->route('admin.users.index')->with('success', 'User updated!');
     }
 
@@ -53,6 +55,17 @@ class UserController extends Controller
             return back()->with('error', 'You cannot delete your own account.');
         }
         $user->delete();
+
         return redirect()->route('admin.users.index')->with('success', 'User deleted!');
+    }
+
+    public function resetTwoFactor(User $user)
+    {
+        $user->update([
+            'two_factor_secret' => null,
+            'two_factor_enabled' => false,
+        ]);
+
+        return back()->with('success', 'User 2FA has been reset successfully!');
     }
 }

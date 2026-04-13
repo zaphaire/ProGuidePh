@@ -16,7 +16,7 @@
     <div class="admin-table-container">
         <table class="admin-table">
             <thead>
-                <tr><th>User</th><th>Role</th><th>Posts</th><th>Joined</th><th>Actions</th></tr>
+                <tr><th>User</th><th>Role</th><th>Posts</th><th>2FA</th><th>Joined</th><th>Actions</th></tr>
             </thead>
             <tbody>
                 @forelse($users as $user)
@@ -32,22 +32,31 @@
                     </td>
                     <td><span class="badge badge-{{ $user->role }}">{{ ucfirst($user->role) }}</span></td>
                     <td style="color:var(--primary)">{{ $user->posts_count }}</td>
+                    <td>
+                        @if($user->two_factor_enabled)
+                            <span class="badge badge-green">2FA</span>
+                        @else
+                            <span class="badge badge-gray">No 2FA</span>
+                        @endif
+                    </td>
                     <td style="color:var(--text-muted);font-size:.8rem">{{ $user->created_at->format('M d, Y') }}</td>
                     <td>
                         <div style="display:flex;gap:.4rem">
-                            @if($user->id !== auth()->id())
-                                <form id="delete-user-{{ $user->id }}" action="{{ route('admin.users.destroy', $user) }}" method="POST" style="display: none;">
-                                    @csrf @method('DELETE')
+                            @if($user->two_factor_enabled)
+                                <form id="reset-2fa-{{ $user->id }}" action="{{ route('users.reset-2fa', $user) }}" method="POST" style="display: none;">
+                                    @csrf
                                 </form>
-                                <button type="button" onclick="openDeleteModal('delete-user-{{ $user->id }}', 'Are you sure you want to delete this user? Their posts will remain but will no longer have an author.')" class="btn btn-danger btn-sm">Delete</button>
-                            @else
-                                <span style="font-size:.78rem;color:var(--text-muted)">That's you</span>
+                                <button type="button" onclick="openDeleteModal('reset-2fa-{{ $user->id }}', 'Reset this user\'s 2FA? They will need to set it up again.')" class="btn btn-warning btn-sm">Reset 2FA</button>
                             @endif
+                            <form id="delete-user-{{ $user->id }}" action="{{ route('users.destroy', $user) }}" method="POST" style="display: none;">
+                                @csrf @method('DELETE')
+                            </form>
+                            <button type="button" onclick="openDeleteModal('delete-user-{{ $user->id }}', 'Are you sure you want to delete this user? Their posts will remain but will no longer have an author.')" class="btn btn-danger btn-sm">Delete</button>
                         </div>
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="5" style="text-align:center;color:var(--text-muted)">No users found.</td></tr>
+                <tr><td colspan="6" style="text-align:center;color:var(--text-muted)">No users found.</td></tr>
                 @endforelse
             </tbody>
         </table>

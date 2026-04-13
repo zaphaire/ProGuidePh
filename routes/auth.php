@@ -28,6 +28,8 @@ Route::middleware('guest')->group(function () {
     Route::get('2fa', [TwoFactorAuthController::class, 'showSelection'])->name('2fa.select');
     Route::post('2fa', [TwoFactorAuthController::class, 'selectMethod'])->name('2fa.select');
     Route::post('2fa/authenticator/verify', [TwoFactorAuthController::class, 'verifyAuthenticator'])->name('2fa.authenticator.verify');
+    Route::get('2fa/authenticator/setup', [TwoFactorAuthController::class, 'showAuthenticatorSetup'])->name('2fa.authenticator.setup');
+    Route::post('2fa/authenticator/setup', [TwoFactorAuthController::class, 'setupAuthenticator'])->name('2fa.authenticator.setup');
     Route::post('2fa/cancel', [TwoFactorAuthController::class, 'cancel'])->name('2fa.cancel');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])

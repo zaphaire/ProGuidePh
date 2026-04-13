@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Route;
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-
 // Newsletter Routes
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 Route::post('/newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
@@ -80,6 +79,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Users
     Route::resource('users', UserController::class)->except(['show', 'create', 'edit']);
+    Route::post('users/{user}/reset-2fa', [UserController::class, 'resetTwoFactor'])->name('users.reset-2fa');
 
     // Announcements
     Route::resource('announcements', AnnouncementController::class)->except(['show', 'create', 'edit']);

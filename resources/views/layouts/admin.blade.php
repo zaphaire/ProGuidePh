@@ -162,6 +162,8 @@
         .badge-admin     { background: rgba(239,68,68,.15); color: #ef4444; }
         .badge-editor    { background: rgba(59,130,246,.15); color: #60a5fa; }
         .badge-viewer    { background: rgba(100,116,139,.15); color: #94a3b8; }
+        .badge-green     { background: rgba(16,185,129,.15); color: #10b981; }
+        .badge-gray     { background: rgba(100,116,139,.15); color: #94a3b8; }
 
         /* Alert */
         .flash-success { background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.2); color: #10b981; padding: .85rem 1rem; border-radius: 10px; margin-bottom: 1.25rem; font-size: .9rem; }
