@@ -24,15 +24,7 @@ class ProfileController extends Controller
         if (! $user->two_factor_enabled) {
             $twoFaController = app(TwoFactorAuthController::class);
             $secret = $twoFaController->generateSecret();
-            $qrCodeUrl = sprintf(
-                'otpauth://totp/%s:%s?secret=%s&issuer=%s',
-                rawurlencode(config('app.name')),
-                rawurlencode($user->email),
-                $secret,
-                rawurlencode(config('app.name'))
-            );
-            $pngData = base64_encode(file_get_contents('https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl='.urlencode($qrCodeUrl)));
-            $qrCode = '<img src="data:image/png;base64,'.$pngData.'" alt="QR Code" />';
+            $qrCode = $twoFaController->generateQrCode($user, $secret);
             $request->session()->put('2fa_secret', $secret);
         }
 

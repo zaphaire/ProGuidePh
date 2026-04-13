@@ -483,7 +483,7 @@ class TwoFactorAuthController extends Controller
         return strtoupper(substr($secret, 0, 32));
     }
 
-    private function generateQrCode(User $user, string $secret): string
+    public function generateQrCode(User $user, string $secret): string
     {
         $qrCodeUrl = sprintf(
             'otpauth://totp/%s:%s?secret=%s&issuer=%s',
@@ -493,8 +493,20 @@ class TwoFactorAuthController extends Controller
             rawurlencode(config('app.name'))
         );
 
-        $pngData = base64_encode(file_get_contents('https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl='.urlencode($qrCodeUrl)));
+        $qrCodeUrl = urlencode($qrCodeUrl);
 
-        return '<img src="data:image/png;base64,'.$pngData.'" alt="QR Code" />';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='.$qrCodeUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        $pngData = curl_exec($ch);
+        curl_close($ch);
+
+        if ($pngData) {
+            return '<img src="data:image/png;base64,'.base64_encode($pngData).'" alt="QR Code" />';
+        }
+
+        return '<p style="color: #ef4444; font-size: 0.875rem;">Unable to generate QR code. Please enter this secret manually: <code style="background: #f1f5f9; padding: 0.25rem 0.5rem; border-radius: 4px; display: block; margin-top: 0.5rem; word-break: break-all;">'.$secret.'</code></p>';
     }
 }
