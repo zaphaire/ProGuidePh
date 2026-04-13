@@ -3,8 +3,14 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
-    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    @php
+        $faviconLogo = \App\Models\Setting::get('site_logo');
+        $faviconUrl = $faviconLogo && (str_starts_with($faviconLogo, 'http') || str_starts_with($faviconLogo, '//'))
+            ? $faviconLogo
+            : ($faviconLogo ? asset('storage/' . $faviconLogo) : asset('favicon.svg'));
+    @endphp
+    <link rel="icon" href="{{ $faviconUrl }}">
+    <link rel="apple-touch-icon" href="{{ $faviconUrl }}">
     <title>@yield('title', 'Admin') — {{ \App\Models\Setting::get('site_name', 'ProGuidePh') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">

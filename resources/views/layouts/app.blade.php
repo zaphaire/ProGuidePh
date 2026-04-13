@@ -30,9 +30,14 @@
     <meta name="twitter:description" content="{{ $pageDesc ?: $metaDesc }}">
     <meta name="twitter:image" content="{{ $ogImage ?: (trim(strip_tags(trim($__env->yieldContent('og_image'))) ?: asset('images/og-default.png'))) }}">
     <link rel="canonical" href="{{ url()->current() }}">
-    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
-    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
-    <link rel="apple-touch-icon" href="{{ asset('images/icon.svg') }}">
+    @php
+        $faviconLogo = \App\Models\Setting::get('site_logo');
+        $faviconUrl = $faviconLogo && (str_starts_with($faviconLogo, 'http') || str_starts_with($faviconLogo, '//')) 
+            ? $faviconLogo 
+            : ($faviconLogo ? asset('storage/' . $faviconLogo) : asset('favicon.svg'));
+    @endphp
+    <link rel="icon" href="{{ $faviconUrl }}">
+    <link rel="apple-touch-icon" href="{{ $faviconUrl }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
