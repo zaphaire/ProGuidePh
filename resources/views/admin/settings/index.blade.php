@@ -25,7 +25,7 @@ $currentLogo = \App\Models\Setting::get('site_logo');
         @if($currentLogo)
             <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-subtle); margin-bottom: 1rem;">
                 <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Current Logo Preview:</p>
-                <img src="{{ $currentLogo }}" alt="Site Logo" style="max-width: 200px; max-height: 80px; object-fit: contain;" onerror="this.parentElement.innerHTML='<p style=\'color:#ef4444\'>Unable to load image. Check the URL.</p>'">
+                <img src="{{ str_starts_with($currentLogo, 'http') ? $currentLogo : asset('storage/' . $currentLogo) }}" alt="Site Logo" style="max-width: 200px; max-height: 80px; object-fit: contain;" onerror="this.parentElement.innerHTML='<p style=\'color:#ef4444\'>Unable to load image. Check the URL.</p>'">
             </div>
         @endif
         
