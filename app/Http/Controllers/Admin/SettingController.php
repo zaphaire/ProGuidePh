@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
 {
@@ -28,9 +27,7 @@ class SettingController extends Controller
         foreach ($data as $key => $value) {
             if ($key === 'site_logo' && ! empty($value)) {
                 $processedLogo = $this->processLogoUrl($value);
-                if ($processedLogo) {
-                    Setting::set($key, $processedLogo);
-                }
+                Setting::set($key, $processedLogo);
             } elseif (! empty($value)) {
                 Setting::set($key, $value);
             }
@@ -41,85 +38,23 @@ class SettingController extends Controller
         return redirect()->route('admin.settings.index')->with('success', 'Settings saved successfully!');
     }
 
-    private function processLogoUrl(string $url): ?string
+    private function processLogoUrl(string $url): string
     {
         $url = trim($url);
 
         if (preg_match('/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/', $url, $matches)) {
             $fileId = $matches[1];
-            $url = 'https://drive.google.com/uc?export=view&id='.$fileId;
+
+            return 'https://drive.google.com/uc?export=view&id='.$fileId;
         }
 
         if (preg_match('/drive\.google\.com\/uc\?export=view&id=([a-zA-Z0-9_-]+)/', $url, $matches)) {
             $fileId = $matches[1];
-            $url = 'https://drive.google.com/uc?export=view&id='.$fileId;
-        }
 
-        if (str_starts_with($url, 'https://drive.google.com/uc')) {
-            $localPath = $this->downloadImageToLocal($url);
-            if ($localPath) {
-                return $localPath;
-            }
-
-            Log::warning('Failed to download logo from Google Drive, using direct URL: '.$url);
-
-            return $url;
+            return 'https://drive.google.com/uc?export=view&id='.$fileId;
         }
 
         return $url;
-    }
-
-    private function downloadImageToLocal(string $url): ?string
-    {
-        try {
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-            curl_setopt($ch, CURLOPT_COOKIEJAR, storage_path('cookies.txt'));
-            curl_setopt($ch, CURLOPT_COOKIEFILE, storage_path('cookies.txt'));
-            $imageData = curl_exec($ch);
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-            curl_close($ch);
-
-            if ($httpCode !== 200 || empty($imageData)) {
-                Log::error('Download failed - HTTP: '.$httpCode.', Data length: '.strlen($imageData));
-
-                return null;
-            }
-
-            if (strlen($imageData) < 100) {
-                Log::error('Downloaded data too small: '.strlen($imageData));
-
-                return null;
-            }
-
-            $extension = match (true) {
-                str_contains($contentType ?? '', 'jpeg') || str_contains($contentType ?? '', 'jpg') => 'jpg',
-                str_contains($contentType ?? '', 'png') => 'png',
-                str_contains($contentType ?? '', 'gif') => 'gif',
-                str_contains($contentType ?? '', 'webp') => 'webp',
-                str_contains($contentType ?? '', 'svg') => 'svg',
-                default => 'png',
-            };
-
-            if ($extension === 'svg' || str_starts_with($imageData, '<?xml') || str_starts_with($imageData, '<svg')) {
-                $extension = 'svg';
-            }
-
-            $filename = 'logo-'.time().'.'.$extension;
-            $path = 'logos/'.$filename;
-            Storage::disk('public')->put($path, $imageData);
-
-            return $path;
-        } catch (\Exception $e) {
-            Log::error('Failed to download logo: '.$e->getMessage());
-
-            return null;
-        }
     }
 
     private function generateFavicon($logo)
